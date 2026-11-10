@@ -1,0 +1,14 @@
+# Python
+.venv/
+__pycache__/
+*.pyc
+
+# Your own data and settings: never committed
+data/
+prompts/
+flowlystack.config.json
+.env
+
+# Editors and systems
+.DS_Store
+.claude/

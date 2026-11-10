@@ -1,0 +1,81 @@
+# FlowlyStack: run it with
+#
+#     docker compose up -d
+#
+# then open http://127.0.0.1:8372 and create your account (the first visit). Nothing here needs editing. Everything else is set in the app (Settings).
+# Optional: copy .env.example to .env to change the port, the time zone or the Claude / Codex folders (the installer script does that for you).
+#
+# Update:  docker compose pull   then   docker compose up -d      (your prompts and settings stay: they are in ./prompts and the data volume)
+# Back up: copy ./prompts, and the data volume (login, settings, caches) with the command in docs/updating-and-backup.md.
+name: flowlystack
+
+services:
+  flowlystack:
+    # TODO at release: default to the published image, ghcr.io/<owner>/flowlystack:latest.
+    image: ${FLOWLYSTACK_IMAGE:-flowlystack:local}
+    build: .
+    # A fixed name: the capture hook on the host runs `docker exec -i <name> python hooks/capture_prompt.py`. A second install on the same
+    # computer sets FLOWLYSTACK_CONTAINER to another name.
+    container_name: ${FLOWLYSTACK_CONTAINER:-flowlystack-app}
+    init: true
+    restart: unless-stopped
+    ports:
+      # This computer only. To reach it from other devices put a reverse proxy in front (docs/remote-access.md); do not just open the port.
+      - "127.0.0.1:${FLOWLYSTACK_PORT:-8372}:8372"
+    environment:
+      TZ: ${TZ:-UTC}                          # the Dashboard counts days in this time zone
+      PUID: ${PUID:-1000}                     # the owner of ./prompts and the data volume (Linux: your own user id, `id -u`)
+      PGID: ${PGID:-1000}
+      FLOWLYSTACK_SOURCES: ${FLOWLYSTACK_SOURCES:-claude}   # which agents the Dashboard offers; the installer adds codex when it finds it
+      FLOWLYSTACK_MEILI_URL: http://meilisearch:7700
+      FLOWLYSTACK_SEARCH_KEY_FILE: /search/key
+      FLOWLYSTACK_CONTAINER: ${FLOWLYSTACK_CONTAINER:-flowlystack-app}   # the app prints the right hook command
+      FLOWLYSTACK_SESSION_TOKENS: ${FLOWLYSTACK_SESSION_TOKENS:-}   # optional: your own 5-hour cap for the usage gauge (a number, see docs/usage-limits.md)
+      FLOWLYSTACK_WEBUI_DIR: /webui                           # where the Open WebUI folder above is mounted
+      FLOWLYSTACK_TRUST_PROXY: ${FLOWLYSTACK_TRUST_PROXY:-}   # set to 1 in .env only when a reverse proxy is the only way in (docs/remote-access.md)
+    volumes:
+      - ./prompts:/app/prompts               # your prompts and documents: plain files you can open and back up
+      - flowlystack_data:/app/data           # login, settings and caches (SQLite, vectors)
+      - search_key:/search
+      # The Dashboard reads these three folders, read-only, and nothing else of ~/.claude or ~/.codex (never the session keys or auth files).
+      # Until .env says where they are, they point at an empty folder and the Dashboard starts empty.
+      - ${CLAUDE_PROJECTS_DIR:-./empty}:/home/app/.claude/projects:ro
+      - ${CODEX_SESSIONS_DIR:-./empty}:/home/app/.codex/sessions:ro
+      - ${CODEX_ARCHIVED_DIR:-./empty}:/home/app/.codex/archived_sessions:ro
+      # Open WebUI (for the Ollama view): set OPENWEBUI_DATA_DIR in .env to the folder that holds its webui.db. Without it this is an empty folder and
+      # Ollama is simply not offered. If Open WebUI keeps its data in a Docker named volume instead, replace the line below with the commented block
+      # at the bottom of this file (keep a copy of your edit: the installer replaces this file when it updates).
+      - ${OPENWEBUI_DATA_DIR:-./empty}:/webui:ro
+    extra_hosts:
+      - "host.docker.internal:host-gateway"  # Ollama on this computer is http://host.docker.internal:11434 (the default address in here)
+    cap_drop: [ALL]
+    cap_add: [CHOWN, SETUID, SETGID]         # only what the start-up script needs to fix folder owners and drop to PUID
+    security_opt:
+      - no-new-privileges:true
+
+  meilisearch:
+    # Pinned on purpose: typo tolerance stops working once documents are added one at a time (which is how the app writes them) from v1.41.0 on.
+    # v1.40.0 is the newest version that passed. Re-test before upgrading. No port is published: only the app reaches it. If it is down, search
+    # falls back to plain matching by itself.
+    image: getmeili/meilisearch:v1.40.0
+    restart: unless-stopped
+    entrypoint: ["sh", "-c", "while [ ! -s /search/key ]; do sleep 1; done; MEILI_MASTER_KEY=$$(cat /search/key) exec /bin/meilisearch"]
+    environment:
+      MEILI_ENV: production
+      MEILI_NO_ANALYTICS: "true"
+    volumes:
+      - meili_data:/meili_data               # the index is a rebuildable cache of the prompt files: no backup needed
+      - search_key:/search:ro
+
+volumes:
+  flowlystack_data:
+  meili_data:
+  search_key:
+
+# Open WebUI in a Docker named volume (the standard Open WebUI quick-start uses one, usually called open-webui; see `docker volume ls`):
+# 1. replace the line   - ${OPENWEBUI_DATA_DIR:-./empty}:/webui:ro   in the flowlystack service above with   - openwebui_data:/webui:ro
+# 2. add these lines under the existing top-level `volumes:` list above (the name must match your Open WebUI volume):
+#
+#   openwebui_data:
+#     external: true
+#     name: open-webui

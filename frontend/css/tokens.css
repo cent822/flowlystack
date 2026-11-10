@@ -1,0 +1,178 @@
+/* Design tokens from DESIGN.md v2.2 (Leung-Portfolio-DesignSystem). Roles are identical in both modes. */
+:root {
+  --spacing-xxs: 2px; --spacing-xs: 4px; --spacing-sm: 8px; --spacing-md: 12px; --spacing-lg: 16px;
+  --spacing-xl: 24px; --spacing-xxl: 32px; --spacing-xxxl: 48px; --spacing-huge: 64px;
+  --radius-xs: 4px; --radius-sm: 6px; --radius-md: 8px; --radius-lg: 12px; --radius-xl: 16px; --radius-full: 9999px;
+  --container-max: 1760px;   /* every page uses the same wide column; narrower windows just fill the panel */
+  /* Type sizes (DESIGN.md "Workspace type scale"). Same in both modes, so defined once. Use these, never a bare px. */
+  --fs-nano: 10px; --fs-micro: 11px; --fs-caption: 12px; --fs-label: 13px; --fs-meta: 14px; --fs-control: 15px;
+  --fs-body: 16px; --fs-card-title: 17px; --fs-intro: 17px; --fs-lead: 18px; --fs-row-title: 20px; --fs-title-sm: 22px;
+  --fs-chat: 17px;   /* a chat thread and the input box tied to it (Collections chat, Studio Assistant): bigger than --fs-control so a conversation reads easily */
+  --fs-title-md: 28px; --fs-page-title: 36px; --fs-kpi: 38px;
+  /* Firm text (DESIGN.md "Firm text"): the body font is weight 360, so small text gets a heavier weight. Same in both modes. */
+  --fw-firm: 500; --fw-reading: 450;
+  /* Letter spacing for the body font at small sizes (DESIGN.md "Workspace type scale"): the narrower the face is read, the more air. 17px and up: none. */
+  --track-nano: 0.04em; --track-micro: 0.035em; --track-caption: 0.03em; --track-label: 0.025em; --track-meta: 0.02em; --track-control: 0.012em; --track-body: 0.006em;
+  /* Compact control heights (DESIGN.md "Compact controls"). Same in both modes. The text inside is always larger than the control looks: 12px in 20px. */
+  --ctl-compact-h: 20px; --ctl-chip-h: 22px;
+  --gutter: var(--spacing-xxl);
+  --dur-fast: 120ms; --dur-base: 200ms; --dur-slow: 320ms;
+  --ease: cubic-bezier(0.2, 0, 0, 1);
+  --font-display: "Google Sans Flex", "Google Sans", system-ui, sans-serif;
+  --font-body: "Roboto Condensed", system-ui, sans-serif;
+  --font-code: "JetBrains Mono", ui-monospace, monospace;
+}
+@media (max-width: 1024px) { :root { --gutter: var(--spacing-xl); } }
+@media (max-width: 480px) { :root { --gutter: var(--spacing-lg); } }
+
+/* ---- Light ---- */
+:root {
+  color-scheme: light;
+  --canvas: #FFFFFF; --canvas-soft: #F9FAFB; --surface-muted: #E6E9EC;
+  --text-primary: #2F2F2F; --text-secondary: #3F3F3F; --text-muted: #4F4F4F;
+  --hairline: #D9D9D9; --hairline-strong: #C3C3C3;
+  --accent: #36ECDE; --accent-hover: #7DE2DF; --on-accent: #2F2F2F; --on-accent-strong: #000000;
+  --link: #00203F; --focus-ring: #00203F;
+  --shadow-sm: 0 1px 2px rgba(0, 32, 63, 0.06); --shadow-md: 0 4px 12px rgba(0, 32, 63, 0.08); --shadow-lg: 0 12px 32px rgba(0, 32, 63, 0.12);
+  --scrim: rgba(0, 32, 63, 0.16);
+  /* chart (dataviz palette, light steps) */
+  --series-1: #2a78d6; --series-2: #eb6834; --series-3: #1baf7a; --series-4: #eda100;
+  --series-5: #e87ba4; --series-6: #008300; --series-7: #6250d6; --series-8: #e34948; --series-9: #8b5e3c;
+  --seq-0: #E6E9EC; --seq-1: #cde2fb; --seq-2: #86b6ef; --seq-3: #3987e5; --seq-4: #1c5cab; --seq-5: #0d366b;
+  --gauge-fill: #00203F; --warn: #eb6834; --crit: #e34948; --ok: #14833f; --star: #f2b400;
+  /* cyber layer (light): navy ink, mint/laguna glow */
+  --edge: #35ACBE; --edge-soft: rgba(53, 172, 190, 0.35); --glow-r: 2px; --glow-mix: 30%;
+  /* logo (day: pure black) */
+  --logo-a: #000; --logo-b: #000; --logo-ink: #000;
+  --grid: rgba(0, 32, 63, 0.055); --bg-glow-1: rgba(54, 236, 222, 0.22); --bg-glow-2: rgba(0, 32, 63, 0.07);
+  --panel-bg: rgba(255, 255, 255, 0.78); --panel-bg-2: rgba(249, 250, 251, 0.9);
+  --k1: #36ECDE; --k1-ink: #2F2F2F; --k2: #35ACBE; --k2-ink: #00203F; --k3: #7DE2DF; --k3-ink: #00203F;
+  --k4: #00203F; --k4-ink: #FFFFFF; --k5: #136776; --k5-ink: #FFFFFF; --k6: #12516b; --k6-ink: #FFFFFF;
+  --kpi-sub: rgba(255, 255, 255, 0.82); --kpi-sub-dark: rgba(0, 32, 63, 0.78);
+  /* Linkshell canvas: block tile colours (Spec and Note = amber, Reference = violet), the frame tint and the grid dot */
+  --tile-amber-bg: #FAEEDA; --tile-amber-ink: #854F0B; --tile-violet-bg: #EEEDFE; --tile-violet-ink: #534AB7; --canvas-frame: rgba(0, 32, 63, 0.03); --canvas-dot: var(--hairline);
+}
+/* ---- Dark: OS preference unless the viewer forced light ---- */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --canvas: #1A1D2E; --canvas-soft: #12141F; --surface-muted: #22263A;
+    --text-primary: #F9FAFB; --text-secondary: #E0E4EE; --text-muted: #BCC1D3;
+    --hairline: #2A2D3C; --hairline-strong: #3A3D4E;
+    --accent: #35ACBE; --accent-hover: #7DE2DF; --on-accent: #1A1D2E; --on-accent-strong: #000000;
+    --link: #7DE2DF; --focus-ring: #7DE2DF;
+    --shadow-sm: 0 1px 2px rgba(18, 20, 31, 0.40); --shadow-md: 0 4px 12px rgba(18, 20, 31, 0.50); --shadow-lg: 0 12px 32px rgba(18, 20, 31, 0.60);
+    --scrim: rgba(6, 8, 16, 0.34);
+    --series-1: #3987e5; --series-2: #d95926; --series-3: #199e70; --series-4: #c98500;
+    --series-5: #d55181; --series-6: #008300; --series-7: #9085e9; --series-8: #e66767; --series-9: #c4957a;
+    --seq-0: #22263A; --seq-1: #104281; --seq-2: #1c5cab; --seq-3: #2a78d6; --seq-4: #5598e7; --seq-5: #9ec5f4;
+    --gauge-fill: #7DE2DF; --warn: #d95926; --crit: #e66767; --ok: #4cd98a; --star: #ffd23f;
+    /* cyber layer (dark): deep canvas, cyan neon */
+    --edge: #7DE2DF; --edge-soft: rgba(125, 226, 223, 0.30); --glow-r: 3px; --glow-mix: 45%;
+  --logo-a: #22d3ee; --logo-b: #34d399; --logo-ink: #fff;
+    --grid: rgba(125, 226, 223, 0.06); --bg-glow-1: rgba(53, 172, 190, 0.20); --bg-glow-2: rgba(54, 236, 222, 0.07);
+    --panel-bg: rgba(18, 20, 31, 0.72); --panel-bg-2: rgba(34, 38, 58, 0.45);
+    --k1: #36ECDE; --k1-ink: #36ECDE; --k2: #35ACBE; --k2-ink: #7DE2DF; --k3: #7DE2DF; --k3-ink: #7DE2DF;
+    --k4: #28899E; --k4-ink: #7DE2DF; --k5: #35CCCE; --k5-ink: #36ECDE; --k6: #51C7CE; --k6-ink: #36ECDE;
+    --kpi-sub: #D0D4E0; --kpi-sub-dark: #D0D4E0;
+    /* Linkshell canvas tokens */
+    --tile-amber-bg: #3a2f17; --tile-amber-ink: #FAC775; --tile-violet-bg: #2a2750; --tile-violet-ink: #AFA9EC; --canvas-frame: rgba(53, 172, 190, 0.05); --canvas-dot: var(--hairline);
+  }
+}
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --canvas: #1A1D2E; --canvas-soft: #12141F; --surface-muted: #22263A;
+  --text-primary: #F9FAFB; --text-secondary: #E0E4EE; --text-muted: #BCC1D3;
+  --hairline: #2A2D3C; --hairline-strong: #3A3D4E;
+  --accent: #35ACBE; --accent-hover: #7DE2DF; --on-accent: #1A1D2E; --on-accent-strong: #000000;
+  --link: #7DE2DF; --focus-ring: #7DE2DF;
+  --shadow-sm: 0 1px 2px rgba(18, 20, 31, 0.40); --shadow-md: 0 4px 12px rgba(18, 20, 31, 0.50); --shadow-lg: 0 12px 32px rgba(18, 20, 31, 0.60);
+  --scrim: rgba(6, 8, 16, 0.34);
+  --series-1: #3987e5; --series-2: #d95926; --series-3: #199e70; --series-4: #c98500;
+  --series-5: #d55181; --series-6: #008300; --series-7: #9085e9; --series-8: #e66767; --series-9: #c4957a;
+  --seq-0: #22263A; --seq-1: #104281; --seq-2: #1c5cab; --seq-3: #2a78d6; --seq-4: #5598e7; --seq-5: #9ec5f4;
+  --gauge-fill: #7DE2DF; --warn: #d95926; --crit: #e66767; --ok: #4cd98a; --star: #ffd23f;
+  /* cyber layer (dark): deep canvas, cyan neon */
+  --edge: #7DE2DF; --edge-soft: rgba(125, 226, 223, 0.30); --glow-r: 3px; --glow-mix: 45%;
+  --logo-a: #22d3ee; --logo-b: #34d399; --logo-ink: #fff;
+  --grid: rgba(125, 226, 223, 0.06); --bg-glow-1: rgba(53, 172, 190, 0.20); --bg-glow-2: rgba(54, 236, 222, 0.07);
+  --panel-bg: rgba(18, 20, 31, 0.72); --panel-bg-2: rgba(34, 38, 58, 0.45);
+  --k1: #36ECDE; --k1-ink: #36ECDE; --k2: #35ACBE; --k2-ink: #7DE2DF; --k3: #7DE2DF; --k3-ink: #7DE2DF;
+  --k4: #28899E; --k4-ink: #7DE2DF; --k5: #35CCCE; --k5-ink: #36ECDE; --k6: #51C7CE; --k6-ink: #36ECDE;
+  --kpi-sub: #D0D4E0; --kpi-sub-dark: #D0D4E0;
+  /* Linkshell canvas tokens */
+  --tile-amber-bg: #3a2f17; --tile-amber-ink: #FAC775; --tile-violet-bg: #2a2750; --tile-violet-ink: #AFA9EC; --canvas-frame: rgba(53, 172, 190, 0.05); --canvas-dot: var(--hairline);
+}
+
+/* ======================================================================================================================
+   FIRM TEXT (DESIGN.md "Firm text"). Small text in the thin body font (weight 360) gets --fw-firm (500) for descriptions, hints,
+   counts and notes, --fw-reading (450) for text people read at length, and --fs-control (15px) for hint lines. One block per page,
+   scoped to that page; mono labels, headings, chart text and colour tiles are left alone. A new page adds its own block here.
+   ====================================================================================================================== */
+/* Firm text (Settings only): descriptions and status text one size up (15px) and weight 500, the body font is a thin condensed face */
+.set-shell .set-desc, .set-shell .set-note, .set-shell .small.muted { font-size: var(--fs-control); font-weight: var(--fw-firm); line-height: 1.5; letter-spacing: var(--track-control); }
+
+/* Firm text (Linkshell Reference panel): the four small file icons (Rename, Note, Open, Remove) in the stronger grey, a little bigger and heavier */
+.lkp-fact .lkp-rm { width: 26px; height: 26px; color: #3F3F3F; }
+.lkp-fact .lkp-rm svg { width: 18px; height: 18px; stroke-width: 2.2; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .lkp-fact .lkp-rm { color: #E0E4EE; } }
+:root[data-theme="dark"] .lkp-fact .lkp-rm { color: #E0E4EE; }
+.lkp-fact .lkp-rm:hover { color: var(--text-primary); }
+
+/* Firm text (Collections page only): small body-font descriptions and hints at weight 500, small ones also 15px (the body font is weight 360, very thin) */
+.co-page .muted:not(.pl-count):not(.pr-meta), .co-page .co-stepbody, .co-page .co-indexnote { font-weight: var(--fw-firm); letter-spacing: var(--track-control); }
+.co-page .small.muted:not(.pl-count), .co-page .co-stepbody, .co-page .co-indexnote { font-size: var(--fs-control); line-height: 1.5; }
+/* Firm text (Collections inner pages): document list names, document and answer text, table cells. Reading text only at 450 */
+.co-page .co-vfile { font-weight: var(--fw-firm); }
+.co-page .co-vfile > span:not(.co-vsize) { font-size: var(--fs-meta); }
+.co-page .co-md, .co-page .co-atext, .co-page .co-excerpt, .co-page .co-raw { font-weight: var(--fw-reading); }
+.co-page .co-md table { font-size: var(--fs-meta); }
+
+/* Firm text (Lattice page, text panels only; the canvas labels are drawn by draw.js and are not touched): small body-font text at weight 500, hint lines 15px, filter labels and small notes one size up */
+.lat-page .muted, .lat-page small, .lat-page .gal-sr, .lat-page .gal-n, .lat-page .lat-lg, .lat-page label > span:not(.lat-h):not(.srch) { font-weight: var(--fw-firm); }
+.lat-page p.small.muted { font-size: var(--fs-control); line-height: 1.5; letter-spacing: var(--track-control); }
+.lat-page small.muted, .lat-page .gal-n, .lat-page .lat-lg { font-size: var(--fs-label); letter-spacing: var(--track-label); }
+.lat-page label > span:not(.lat-h):not(.srch):not(.gal-n), .lat-page .lat-colname, .lat-page .lat-none { font-size: var(--fs-meta); letter-spacing: var(--track-meta); }
+
+/* Firm text (Prompt Library and Prompt Studio pages, including the shared editor): small body-font text at weight 500, small lines 15px, list previews at 450 */
+#page-prompts .muted:not(.pr-meta), #page-studio .muted:not(.pr-meta), #page-prompts .small, #page-studio .small,
+#page-prompts .pl-synclabel, #page-prompts .pr-ver-msg, #page-studio .pr-ver-msg { font-weight: var(--fw-firm); }
+#page-prompts .small, #page-studio .small, #page-prompts .pl-synclabel { font-size: var(--fs-control); line-height: 1.5; letter-spacing: var(--track-control); }
+#page-prompts .pr-prev, #page-studio .pr-prev { font-weight: var(--fw-reading); }
+
+/* Firm text (Linkshell: side panel, Follow and Outline): small body-font text at weight 500, hints and small lines 15px, the note under the Follow list 14px, list and context names 450 */
+#page-linkshell .muted:not(.pr-meta), #page-linkshell .small, #page-linkshell .lkf-note, #page-linkshell .lko-hint { font-weight: var(--fw-firm); }
+#page-linkshell .small, #page-linkshell .lko-hint { font-size: var(--fs-control); line-height: 1.5; letter-spacing: var(--track-control); }
+#page-linkshell .lkf-note { font-size: var(--fs-meta); letter-spacing: var(--track-meta); }
+#page-linkshell .lkf-name, #page-linkshell .lkp-ctxname { font-weight: var(--fw-reading); }
+
+/* Firm text (Linkshell Reference > Note dialog): counter and hint at weight 500 and 15px, the note text 16px at 450, title and label one size up */
+.cb-note-dlg .cn-meta { font-weight: var(--fw-firm); font-size: var(--fs-control); letter-spacing: var(--track-control); }
+.cb-note-dlg .cn-ed textarea { font-size: var(--fs-body); font-weight: var(--fw-reading); }
+.cb-dialog.cb-note-dlg h2 { font-size: var(--fs-meta); }
+.cb-note-dlg .pl-label { font-size: var(--fs-label); }
+
+/* Firm text (Dashboard): small text under the tiles and gauge at weight 500 and one size up, notes 15px, table cells 450. Colours are untouched: tiles and charts keep their own. */
+#page-dashboard .muted, #page-dashboard .kpi-sub, #page-dashboard .gauge-sub, #page-dashboard .note { font-weight: var(--fw-firm); }
+#page-dashboard .kpi-sub { font-size: var(--fs-meta); letter-spacing: var(--track-meta); }
+#page-dashboard .gauge-sub { font-size: var(--fs-control); letter-spacing: var(--track-control); }
+#page-dashboard .note { font-size: var(--fs-control); line-height: 1.5; letter-spacing: var(--track-control); }
+#page-dashboard td { font-weight: var(--fw-reading); }
+
+/* Firm text (Trash): intro and counts at weight 500, list previews 450 */
+#page-trash .muted:not(.pr-meta), #page-trash .small { font-weight: var(--fw-firm); }
+#page-trash .pr-prev { font-weight: var(--fw-reading); }
+
+/* Firm text (Gallery page, text only; chart labels and colours are drawn by the chart code and are not touched): small text at weight 500, captions and counts one size up, item lines 450 */
+#page-gallery .muted:not(.pr-meta), #page-gallery .gal-how, #page-gallery .gal-cap, #page-gallery .gal-count, #page-gallery .gal-foot { font-weight: var(--fw-firm); }
+#page-gallery .gal-cap, #page-gallery .gal-count { font-size: var(--fs-meta); letter-spacing: var(--track-meta); }
+#page-gallery .gal-how, #page-gallery .small { font-size: var(--fs-control); line-height: 1.5; letter-spacing: var(--track-control); }
+#page-gallery .gal-it { font-weight: var(--fw-reading); }
+
+/* Firm text (What's new page and the version line in the account menu): small text at weight 500, release text at 450 */
+#page-whatsnew .muted:not(.pr-meta), .acct-ver { font-weight: var(--fw-firm); }
+#page-whatsnew p.muted { font-size: var(--fs-control); line-height: 1.5; letter-spacing: var(--track-control); }
+#page-whatsnew .wn-intro, #page-whatsnew .wn-items { font-weight: var(--fw-reading); }
+
+/* Firm text (whole app): placeholder text in input boxes. One rule: 85% of the muted grey, so it stays clearly lighter than typed text but readable (about 5.7:1 in day, 7:1 at night). */
+input::placeholder, textarea::placeholder { color: color-mix(in srgb, var(--text-muted) 85%, var(--canvas)); opacity: 1; }

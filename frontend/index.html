@@ -1,0 +1,341 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>FlowlyStack</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2064%2064'%3E%3Crect%20width='64'%20height='64'%20rx='14'%20fill='%230b1418'/%3E%3Cg%20fill='none'%20stroke='%2322d3ee'%20stroke-width='4'%20stroke-linecap='round'%20stroke-linejoin='round'%3E%3Cpath%20d='M32%2010%2054%2022%2032%2034%2010%2022Z'/%3E%3Cpath%20d='M10%2031%2032%2043%2054%2031'%20opacity='.7'/%3E%3Cpath%20d='M10%2040%2032%2052%2054%2040'%20opacity='.4'/%3E%3C/g%3E%3C/svg%3E">
+  <script>
+    // Apply the saved theme before first paint so there is no flash.
+    try { const t = new URLSearchParams(location.search).get("theme") || localStorage.getItem("flowlystack-theme"); if (t) document.documentElement.dataset.theme = t; } catch (e) {}
+  </script>
+  <script>
+    // Same idea for the page: name the route now so CSS can hide the Dashboard markup (which is in the HTML) when another page is the target.
+    try { document.documentElement.dataset.route = location.hash.replace(/^#\//, "").split(/[/?]/)[0] || "dashboard"; } catch (e) {}
+  </script>
+  <script src="js/authguard.js"></script>
+  <link rel="preload" href="fonts/GoogleSansFlex-latin.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="fonts/JetBrainsMono-latin.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="fonts/RobotoCondensed-latin.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="css/fonts.css">
+  <link rel="stylesheet" href="css/tokens.css">
+  <link rel="stylesheet" href="css/app.css">
+</head>
+<body>
+  <div class="app" id="app">
+  <script>
+    // The sidebar always lands as the icon strip (auto-hide; main.js wires the hover and the pin toggle). Set before first paint so it does not snap.
+    document.getElementById("app").classList.add("collapsed");
+  </script>
+  <aside class="sidebar" id="sidebar" aria-label="Primary">
+    <div class="side-head">
+      <div class="brand">
+        <svg class="brand-mark" viewBox="0 0 64 64" width="34" height="34" aria-hidden="true"><defs><linearGradient id="ls-g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" style="stop-color:var(--logo-a)"/><stop offset="1" style="stop-color:var(--logo-b)"/></linearGradient></defs><g fill="none" stroke="url(#ls-g)" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M32 8 54 20 32 32 10 20Z"/><path d="M10 29 32 41 54 29" opacity=".75"/><path d="M10 38 32 50 54 38" opacity=".5"/><path d="M10 47 32 59 54 47" opacity=".3"/><path d="M-5-7-5 7 8 0Z" transform="matrix(.866 .5 -.866 .5 32 20)" stroke-width="2.9"/></g></svg>
+        <svg class="brand-name" viewBox="1.4 -23.4 171.5 30.2" width="125" height="22" role="img" aria-label="FlowlyStack"><path style="fill:var(--logo-ink)" d="M1.88 0V-22.55H17.04V-19.09H5.87V-12.93H16.24V-9.54H5.87V0ZM23.25 -22.55V0H19.44V-22.55ZM33.79 0.36Q31.42 0.36 29.65 -0.69Q27.88 -1.74 26.89 -3.62Q25.9 -5.49 25.9 -7.98Q25.9 -10.46 26.89 -12.34Q27.88 -14.23 29.65 -15.29Q31.42 -16.35 33.79 -16.35Q36.13 -16.35 37.91 -15.29Q39.69 -14.23 40.68 -12.34Q41.67 -10.46 41.67 -7.98Q41.67 -5.49 40.68 -3.62Q39.69 -1.74 37.91 -0.69Q36.13 0.36 33.79 0.36ZM33.79 -2.83Q35.62 -2.83 36.71 -4.21Q37.8 -5.59 37.8 -7.98Q37.8 -10.37 36.71 -11.76Q35.62 -13.15 33.79 -13.15Q31.94 -13.15 30.85 -11.77Q29.76 -10.38 29.76 -7.98Q29.76 -5.59 30.85 -4.21Q31.94 -2.83 33.79 -2.83ZM47.35 0 42.41 -15.98H46.42L48.07 -9.91Q48.45 -8.49 48.8 -6.98Q49.15 -5.46 49.51 -3.98Q49.88 -5.46 50.25 -6.98Q50.63 -8.49 51.03 -9.91L52.72 -15.98H56.25L57.93 -9.91Q58.31 -8.49 58.68 -6.99Q59.05 -5.49 59.43 -4.01Q59.77 -5.49 60.12 -6.99Q60.47 -8.49 60.85 -9.91L62.5 -15.98H66.56L61.61 0H57.64L55.7 -6.66Q55.39 -7.77 55.08 -8.93Q54.78 -10.1 54.48 -11.26Q54.19 -10.1 53.89 -8.93Q53.58 -7.77 53.25 -6.66L51.28 0ZM72.34 -22.55V0H68.52V-22.55ZM76.23 6.33V3.22H78.12Q78.89 3.22 79.32 2.81Q79.76 2.39 80.09 1.45L80.68 -0.09L74.52 -15.98H78.56L81.5 -7.66Q81.8 -6.77 82.09 -5.88Q82.37 -5 82.65 -4.12Q83.19 -5.87 83.8 -7.66L86.72 -15.98H90.71L83.57 2.63Q82.15 6.33 78.73 6.33ZM101.02 0.36Q96.83 0.36 94.46 -1.69Q92.09 -3.74 92.09 -7.36H96.01Q96.04 -5.31 97.37 -4.16Q98.69 -3.01 101.05 -3.01Q103.16 -3.01 104.44 -3.9Q105.73 -4.78 105.73 -6.27Q105.73 -7.46 104.76 -8.21Q103.79 -8.96 101.54 -9.48L99.12 -10.02Q95.74 -10.79 94.14 -12.31Q92.53 -13.82 92.53 -16.2Q92.53 -18.21 93.57 -19.72Q94.6 -21.24 96.47 -22.08Q98.34 -22.92 100.83 -22.92Q104.61 -22.92 106.83 -20.99Q109.04 -19.07 109.14 -15.71H105.34Q105.22 -17.5 104 -18.51Q102.79 -19.53 100.81 -19.53Q98.93 -19.53 97.74 -18.65Q96.54 -17.77 96.54 -16.39Q96.54 -15.26 97.49 -14.55Q98.43 -13.85 100.64 -13.35L102.93 -12.82Q106.44 -12.05 108.08 -10.52Q109.71 -8.99 109.71 -6.51Q109.71 -4.4 108.65 -2.86Q107.59 -1.32 105.64 -0.48Q103.69 0.36 101.02 0.36ZM120.94 -15.98V-12.91H117.69V-4.59Q117.69 -3.72 118.04 -3.4Q118.38 -3.07 119.31 -3.07H120.94V0H118.64Q116.2 0 115.03 -0.98Q113.86 -1.97 113.86 -4.03V-12.91H111.07V-15.98H113.86V-20.34H117.69V-15.98ZM128.57 0.26Q126.18 0.26 124.61 -0.95Q123.05 -2.15 123.05 -4.54Q123.05 -6.36 123.93 -7.35Q124.82 -8.34 126.25 -8.79Q127.68 -9.25 129.33 -9.42Q131.55 -9.67 132.43 -9.87Q133.31 -10.07 133.31 -10.88V-11Q133.31 -12.03 132.53 -12.68Q131.75 -13.34 130.39 -13.34Q129 -13.34 128.12 -12.68Q127.25 -12.03 127.18 -11.02H123.5Q123.64 -13.4 125.48 -14.85Q127.33 -16.3 130.46 -16.3Q133.58 -16.3 135.34 -14.85Q137.09 -13.4 137.09 -10.9V0H133.34V-2.26H133.28Q132.7 -1.2 131.61 -0.47Q130.52 0.26 128.57 0.26ZM129.51 -2.57Q131.39 -2.57 132.36 -3.55Q133.32 -4.53 133.32 -5.92V-7.64Q132.98 -7.42 131.98 -7.23Q130.98 -7.04 129.8 -6.86Q128.57 -6.68 127.67 -6.17Q126.77 -5.66 126.77 -4.57Q126.77 -3.63 127.51 -3.1Q128.25 -2.57 129.51 -2.57ZM147.54 0.36Q145.21 0.36 143.44 -0.7Q141.68 -1.76 140.7 -3.63Q139.73 -5.51 139.73 -7.98Q139.73 -10.44 140.7 -12.33Q141.68 -14.21 143.44 -15.28Q145.21 -16.35 147.54 -16.35Q149.55 -16.35 151.12 -15.57Q152.7 -14.79 153.66 -13.42Q154.62 -12.05 154.79 -10.26H151.05Q150.84 -11.55 149.95 -12.36Q149.07 -13.17 147.58 -13.17Q145.71 -13.17 144.65 -11.76Q143.59 -10.35 143.59 -7.98Q143.59 -5.62 144.65 -4.22Q145.71 -2.82 147.58 -2.82Q149.08 -2.82 149.91 -3.61Q150.75 -4.4 151.02 -5.74H154.79Q154.65 -3.98 153.69 -2.6Q152.73 -1.23 151.15 -0.43Q149.57 0.36 147.54 0.36ZM157.35 0V-22.55H161.16V-9.51H161.21L167.43 -15.98H172.01L165.52 -9.08L172.41 0H167.85L162.61 -6.84L161.16 -5.34V0Z"/></svg>
+      </div>
+    </div>
+
+    <button class="side-search" type="button" title="Go to a page or run an action (⌘K)" aria-keyshortcuts="Meta+K Control+K">
+      <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="M16 16l4.5 4.5"/></svg>
+      <span class="nav-label">Search</span>
+      <kbd>⌘K</kbd>
+    </button>
+
+    <nav class="nav" id="nav">
+      <div class="nav-group" data-group="Overview">
+        <span class="nav-group-label">Overview</span>
+        <a class="nav-item" href="#/dashboard" data-route="dashboard" data-keywords="overview home usage tokens limits cost" title="Dashboard">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/></svg>
+          <span class="nav-label">Dashboard</span>
+        </a>
+      </div>
+      <div class="nav-group" data-group="Workspace">
+        <span class="nav-group-label">Workspace</span>
+        <a class="nav-item" href="#/prompts" data-route="prompts" data-keywords="prompts history saved tags versions" title="Prompt Library">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l9 4.2-9 4.2-9-4.2z"/><path d="M3 12l9 4.2 9-4.2"/><path d="M3 16.8l9 4.2 9-4.2"/></svg>
+          <span class="nav-label">Prompt Library</span>
+        </a>
+        <a class="nav-item" href="#/studio" data-route="studio" data-keywords="studio write author reusable refine draft final variables templates" title="Prompt Studio">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19.5 7V6A3.5 3.5 0 0 0 16 2.5H6A3.5 3.5 0 0 0 2.5 6v12A3.5 3.5 0 0 0 6 21.5h10a3.5 3.5 0 0 0 3.5-3.5v-.4"/><path d="M6 6.5h8.5M6 10h8.5M6 13.5h4.5"/><path d="M14.6 17.8l-2.8.5.5-2.8 7-7.6a1.7 1.7 0 0 1 2.4 2.4z"/><path d="M18 9.6l2.2 2.2"/></svg>
+          <span class="nav-label">Prompt Studio</span>
+        </a>
+        <a class="nav-item" href="#/linkshell" data-route="linkshell" data-keywords="plan project canvas flow map steps spec blocks" title="Linkshell">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="6" cy="6" r="2.2"/><circle cx="18" cy="8" r="2.2"/><circle cx="12" cy="18" r="2.2"/><path d="M8 6.4l8 1.1M7.2 8l3.6 8M16.9 10l-3.7 6.2"/></svg>
+          <span class="nav-label">Linkshell</span>
+        </a>
+        <a class="nav-item" href="#/trash" data-route="trash" data-keywords="bin deleted restore" title="Trash">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 12a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2l1-12M9 7V4h6v3"/></svg>
+          <span class="nav-label">Trash</span>
+          <span class="nav-badge" id="trash-badge" hidden></span>
+        </a>
+      </div>
+      <div class="nav-group" data-group="Knowledge">
+        <span class="nav-group-label">Knowledge</span>
+        <a class="nav-item" href="#/collections" data-route="collections" data-keywords="knowledge rag documents embeddings pdf markdown chat vector search sources" title="Collections">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 3.5h6M7 7h10"/><path d="M7 10.5h10a2 2 0 0 1 2 2.2l-.8 6.8a2 2 0 0 1-2 1.7H7.8a2 2 0 0 1-2-1.7L5 12.7a2 2 0 0 1 2-2.2z"/></svg>
+          <span class="nav-label">Collections</span>
+        </a>
+        <a class="nav-item" href="#/gallery" data-route="gallery" data-keywords="patterns charts insights dashboard vocabulary structure repeats words map pulse lifecycle visualize" title="Gallery">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="8" cy="8" r="3"/><circle cx="17" cy="9" r="2"/><circle cx="14" cy="17" r="3.5"/><circle cx="6" cy="17" r="1.5"/></svg>
+          <span class="nav-label">Gallery</span>
+        </a>
+        <a class="nav-item" href="#/lattice" data-route="lattice" data-keywords="lattice knowledge graph connections relationships entities network links related nodes" title="Lattice">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="6" cy="6" r="2"/><circle cx="18" cy="6" r="2"/><circle cx="6" cy="18" r="2"/><circle cx="18" cy="18" r="2"/><circle cx="12" cy="12" r="2"/><path d="M8 6h8M8 18h8M6 8v8M18 8v8M7.4 7.4l3.2 3.2M13.4 13.4l3.2 3.2M16.6 7.4l-3.2 3.2M10.6 13.4l-3.2 3.2"/></svg>
+          <span class="nav-label">Lattice</span>
+        </a>
+      </div>
+    </nav>
+
+    <div class="side-foot">
+      <button class="side-account" id="account-btn" type="button" aria-haspopup="menu" aria-expanded="false" aria-controls="account-menu" title="Account and settings">
+        <span class="avatar"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8.5" r="3.6"/><path d="M5 20c.8-3.6 3.6-5.4 7-5.4s6.2 1.8 7 5.4"/></svg></span>
+        <span class="nav-label">Account</span>
+        <svg class="side-chev" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 15l6-6 6 6"/></svg>
+      </button>
+      <div class="pr-menu side-menu" id="account-menu" role="menu" aria-label="Account" hidden>
+        <div class="acct-head" id="account-user" hidden><span class="avatar av-sm" id="account-head-av" aria-hidden="true"></span><span>Signed in as <b id="account-name"></b></span></div>
+        <a class="pr-menuitem" href="#/settings" role="menuitem" id="account-settings">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>
+          <span>Settings</span>
+        </a>
+        <a class="pr-menuitem" href="#/whatsnew" role="menuitem" id="account-whatsnew">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l1.9 5.1L19 10l-5.1 1.9L12 17l-1.9-5.1L5 10l5.1-1.9z"/><path d="M19 15l.7 1.8 1.8.7-1.8.7L19 20l-.7-1.8-1.8-.7 1.8-.7z"/></svg>
+          <span>What's new</span>
+        </a>
+        <button class="pr-menuitem" type="button" role="menuitem" id="account-theme">
+          <span class="mi-ic" id="account-theme-icon" aria-hidden="true"></span>
+          <span id="account-theme-label">Switch to night mode</span>
+        </button>
+        <button class="pr-menuitem danger" type="button" role="menuitem" id="account-signout" hidden>
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 4H6a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h3M16 8l4 4-4 4M20 12H9"/></svg>
+          <span>Sign out</span>
+        </button>
+        <a class="acct-ver" href="#/settings/about" role="menuitem" id="account-version" title="About this version" hidden></a>
+      </div>
+    </div>
+  </aside>
+
+  <div class="stage">
+  <div class="panel" id="panel">
+  <header class="panel-head">
+    <div class="panel-head-left">
+      <button class="icon-btn" id="side-toggle" type="button" aria-label="Collapse sidebar" aria-expanded="true" aria-controls="sidebar">
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="3"/><path d="M9 4v16"/></svg>
+      </button>
+      <nav class="crumbs" id="crumbs" aria-label="Breadcrumb"></nav>
+    </div>
+    <div class="topbar-right">
+      <details class="pr-more src-menu" id="src-menu" hidden>
+        <summary class="btn btn-sm btn-glow btn-glow-md" aria-label="Choose agent"><span class="btn-label" id="src-label">Claude Code</span><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></summary>
+        <div class="pr-menu pr-morepanel src-panel" id="src-list" role="menu"></div>
+      </details>
+      <button class="icon-btn" id="theme-toggle" type="button" aria-label="Switch to night mode" title="Switch to night mode"></button>
+      <button class="icon-btn" id="top-signout" type="button" aria-label="Sign out" title="Sign out" hidden><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 4H6a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h3M16 8l4 4-4 4M20 12H9"/></svg></button>
+    </div>
+  </header>
+
+  <main class="container">
+   <div class="page" id="page-dashboard" data-page="dashboard">
+    <section class="intro">
+      <span class="eyebrow hud">// local telemetry · <span class="pill" id="live-pill" hidden><span class="dot"></span><span id="live-text"></span></span></span>
+      <h1 id="intro-title">Your Claude Code, at a glance</h1>
+      <p class="muted" id="intro-sub">Read locally from <code>~/.claude</code>. Nothing leaves this machine.</p>
+    </section>
+
+    <section class="kpis" id="kpis" aria-label="Key numbers"></section>
+
+    <section class="grid two">
+      <article class="card limits-card">
+        <header class="card-head"><h2>Usage limits</h2><span class="tag" id="limits-tag" title="Anthropic does not store plan limits on disk, so these are measured against your own peak.">estimated</span></header>
+        <div class="gauges" id="gauges"></div>
+        <p class="note" id="gauge-note"></p>
+      </article>
+      <article class="card">
+        <header class="card-head"><h2>Context windows</h2><span class="tag" id="context-tag" title="Window sizes are guessed from the model name (1M for Sonnet 5, Opus 5 and Fable, otherwise 200k).">estimated</span></header>
+        <div id="context"></div>
+      </article>
+    </section>
+
+    <section class="card">
+      <header class="card-head">
+        <div><h2>Tokens per day</h2><p class="muted small" id="daily-sub">Input + output + cache writes, by model. Cache reads excluded.</p></div>
+        <div class="head-controls">
+          <div class="seg" role="group" aria-label="Range" id="range">
+            <button type="button" data-days="14">14d</button><button type="button" data-days="30" class="on">30d</button><button type="button" data-days="90">90d</button>
+          </div>
+          <button class="btn btn-sm btn-glow" id="table-toggle" type="button" aria-pressed="false">Table</button>
+        </div>
+      </header>
+      <div class="legend" id="area-legend"></div>
+      <div id="area"></div>
+      <div id="area-table" hidden></div>
+    </section>
+
+    <section class="grid two">
+      <article class="card">
+        <header class="card-head"><h2>Activity calendar</h2><span class="muted small">API calls per day, last 26 weeks</span></header>
+        <div id="calendar"></div>
+      </article>
+      <article class="card">
+        <header class="card-head"><h2>When you work</h2><span class="muted small">API calls by weekday and hour</span></header>
+        <div id="hourmap"></div>
+      </article>
+    </section>
+
+    <section class="grid two">
+      <article class="card">
+        <header class="card-head"><h2 id="projects-title">Projects</h2><span class="muted small">tokens used</span></header>
+        <div id="projects"></div>
+      </article>
+      <article class="card">
+        <header class="card-head"><h2 id="tools-title">Tools Claude reaches for</h2><span class="muted small" id="tools-sub">calls, all time</span></header>
+        <div id="tools"></div>
+      </article>
+    </section>
+
+    <section class="card">
+      <header class="card-head"><h2>Sessions</h2><span class="muted small" id="sessions-count"></span></header>
+      <div class="table-wrap"><table id="sessions-table"></table></div>
+      <div id="sessions-na"></div>
+    </section>
+   </div>
+
+   <div class="page" id="page-prompts" data-page="prompts" hidden>
+
+    <div id="pl-list-view">
+    <section class="intro">
+      <span class="eyebrow hud">// workspace</span>
+      <h1>Prompt Library</h1>
+      <p class="muted">Every prompt you submit, saved as files on this machine. Open one to rewrite it, tag it and keep its version history.</p>
+    </section>
+
+    <details class="card pl-setup" id="pl-setup">
+      <summary><h2>Capture setup</h2><span class="muted small" id="pl-count"></span></summary>
+      <div class="pl-setup-body">
+        <p class="small">Prompts are saved to <code id="pl-dir"></code>. To capture new prompts live, add this hook to <code id="pl-file"></code>:</p>
+        <pre class="pl-code" id="pl-snippet"></pre>
+        <div class="pl-row">
+          <button class="btn btn-sm btn-glow btn-glow-md" id="pl-copy" type="button"><svg class="ic ic-copy" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V6a2 2 0 0 1 2-2h9"/></svg><svg class="ic ic-ok" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg><span>Copy hook JSON</span></button>
+          <button class="btn btn-sm btn-glow btn-glow-md" id="pl-import" type="button">Import past prompts from transcripts</button>
+          <span class="muted small" id="pl-import-msg" role="status"></span>
+        </div>
+        <div class="pl-sync" id="pl-sync" hidden></div>
+      </div>
+    </details>
+
+    <section class="pl-filters" aria-label="Filters">
+      <span class="srch"><input class="pl-input" id="pl-q" data-search type="search" placeholder="Search prompts, notes, tags" aria-label="Search prompts"><kbd class="kbd" data-hk="search" aria-hidden="true"></kbd></span>
+      <select class="pl-input" id="pl-filter" aria-label="Show">
+        <option value="all">All</option><option value="starred">Starred</option><option value="edited">Edited</option>
+      </select>
+      <select class="pl-input" id="pl-project" aria-label="Project"></select>
+      <select class="pl-input" id="pl-agent" aria-label="Agent" hidden></select>
+        <details class="pl-tagmenu" id="pl-tagmenu">
+          <summary class="btn btn-sm btn-glow btn-glow-md" id="pl-tagbtn"><span id="pl-tagtxt">Tags</span><kbd class="kbd" data-hk="tags" aria-hidden="true"></kbd></summary>
+          <div class="pl-tagpanel">
+            <input class="pl-input" id="pl-tagfind" type="search" placeholder="Find a tag" aria-label="Find a tag">
+            <div class="pl-tags" id="pl-tags" aria-label="Tags"></div>
+          </div>
+        </details>
+      <span class="pl-tagchips" id="pl-tagchips" aria-label="Selected tags"></span>
+      <span class="muted small pl-count" id="pl-matched"></span>
+    </section>
+
+    <section class="pr-table" aria-label="Prompts">
+      <div class="pr-thead">
+        <button type="button" class="pr-sort" data-sort="title">Title <span></span></button>
+        <button type="button" class="pr-sort" data-sort="relevance" hidden>Relevance <span></span></button>
+        <button type="button" class="pr-sort" data-sort="updated">Updated at <span></span></button>
+      </div>
+      <ul class="pr-list" id="pl-list"></ul>
+      <nav class="pr-pager" id="pl-pager" aria-label="Pagination" hidden></nav>
+    </section>
+    </div>
+
+    <div id="pl-detail-view" hidden></div>
+   </div>
+
+   <div class="page" id="page-studio" data-page="studio" hidden>
+
+    <div id="st-list-view">
+    <section class="intro">
+      <span class="eyebrow hud">// workspace</span>
+      <h1>Prompt Studio</h1>
+      <p class="muted">The prompts you write on purpose and rely on. Keep every version and mark each one Draft, Refined or Final.</p>
+    </section>
+
+    <section class="pl-filters" aria-label="Filters">
+      <span class="srch"><input class="pl-input" id="st-q" data-search type="search" placeholder="Search Studio prompts" aria-label="Search Studio prompts"><kbd class="kbd" data-hk="search" aria-hidden="true"></kbd></span>
+      <select class="pl-input" id="st-status" aria-label="Status"></select>
+      <select class="pl-input" id="st-filter" aria-label="Show">
+        <option value="all">All</option><option value="starred">Starred</option>
+      </select>
+        <details class="pl-tagmenu" id="st-tagmenu">
+          <summary class="btn btn-sm btn-glow btn-glow-md" id="st-tagbtn"><span id="st-tagtxt">Tags</span><kbd class="kbd" data-hk="tags" aria-hidden="true"></kbd></summary>
+          <div class="pl-tagpanel">
+            <input class="pl-input" id="st-tagfind" type="search" placeholder="Find a tag" aria-label="Find a tag">
+            <div class="pl-tags" id="st-tags" aria-label="Tags"></div>
+          </div>
+        </details>
+      <span class="pl-tagchips" id="st-tagchips" aria-label="Selected tags"></span>
+      <span class="muted small pl-count" id="st-matched"></span>
+      <a class="btn btn-sm btn-glow btn-glow-md" href="#/studio/new" id="st-new" data-hotkey="new"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg><span>New prompt</span><kbd class="kbd" data-hk="new"></kbd></a>
+    </section>
+
+    <section class="pr-table" aria-label="Studio prompts">
+      <div class="pr-thead">
+        <button type="button" class="pr-sort" data-sort="title">Title <span></span></button>
+        <button type="button" class="pr-sort" data-sort="relevance" hidden>Relevance <span></span></button>
+        <button type="button" class="pr-sort" data-sort="updated">Updated at <span></span></button>
+      </div>
+      <ul class="pr-list" id="st-list"></ul>
+      <nav class="pr-pager" id="st-pager" aria-label="Pagination" hidden></nav>
+    </section>
+    </div>
+
+    <div id="st-new-view" hidden></div>
+    <div id="st-detail-view" hidden></div>
+   </div>
+
+   <div class="page set-page" id="page-settings" data-page="settings" data-crumb-group="Account" data-crumb-label="Settings" hidden></div>
+
+   <div class="page lk-page" id="page-linkshell" data-page="linkshell" hidden></div>
+
+   <div class="page co-page" id="page-collections" data-page="collections" hidden></div>
+
+   <div class="page gal-page" id="page-gallery" data-page="gallery" hidden></div>
+
+   <div class="page lat-page" id="page-lattice" data-page="lattice" hidden></div>
+
+   <div class="page tr-page" id="page-trash" data-page="trash" hidden>
+    <section class="intro">
+      <span class="eyebrow hud">// workspace</span>
+      <h1>Trash</h1>
+      <p class="muted" id="tr-sub"></p>
+    </section>
+    <section class="tr-bar" aria-label="Trash actions">
+      <span class="muted small" id="tr-count"></span>
+      <button type="button" class="btn btn-sm btn-glow btn-glow-md tr-btn btn-danger" id="tr-empty" hidden>Empty trash</button>
+    </section>
+    <ul class="pr-list" id="tr-list"></ul>
+   </div>
+
+   <div class="page wn-page" id="page-whatsnew" data-page="whatsnew" data-crumb-group="Account" data-crumb-label="What's new" hidden>
+    <section class="intro">
+      <span class="eyebrow hud">// account</span>
+      <h1>What's new</h1>
+      <p class="muted" id="wn-sub"></p>
+    </section>
+    <div class="wn-list" id="wn-list"></div>
+   </div>
+  </main>
+  </div>
+  </div>
+  </div>
+
+  <div class="tooltip" id="tooltip" role="status" hidden></div>
+  <script src="vendor/d3.min.js"></script>
+  <script src="vendor/dagre.min.js"></script>
+  <script type="module" src="js/main.js"></script>
+</body>
+</html>

@@ -1,0 +1,64 @@
+# Dependabot opens pull requests for newer versions. It never merges anything: every change goes through CI (the leak check and the
+# checks) and is reviewed first. Weekly, small groups, and a one-week wait after a release before it is proposed (a new release that
+# turns out to be broken or malicious is usually pulled within days).
+version: 2
+updates:
+  # The GitHub Actions in .github/workflows. They are pinned to full commit hashes; Dependabot updates the hash and the version comment.
+  - package-ecosystem: github-actions
+    directory: "/"
+    schedule:
+      interval: weekly
+    cooldown:
+      default-days: 7
+    groups:
+      actions:
+        patterns: ["*"]
+    labels: ["dependencies"]
+    commit-message:
+      prefix: "CI"
+
+  # The Python packages in pyproject.toml (exact versions on purpose: upgrade deliberately). Minor and patch updates come together in
+  # one pull request; a major update comes alone so it can be read on its own.
+  - package-ecosystem: pip
+    directory: "/"
+    schedule:
+      interval: weekly
+    cooldown:
+      default-days: 7
+    groups:
+      python-minor-and-patch:
+        update-types: ["minor", "patch"]
+    labels: ["dependencies"]
+    commit-message:
+      prefix: "Deps"
+
+  # The Python base image in the Dockerfile. The app is built and tested on Python 3.12 (run.sh, CI and the image agree), so a newer
+  # Python is a decision, not an automatic update.
+  - package-ecosystem: docker
+    directory: "/"
+    schedule:
+      interval: weekly
+    cooldown:
+      default-days: 7
+    ignore:
+      - dependency-name: python
+        versions: [">=3.13"]
+    labels: ["dependencies"]
+    commit-message:
+      prefix: "Docker"
+
+  # The search service in docker-compose.yml. Pinned to Meilisearch v1.40.x on purpose: from v1.41.0 typo tolerance disappears after
+  # incremental adds. Patch fixes inside 1.40 are welcome; 1.41 and up are not, until the incremental-add typo test passes again.
+  # Remove the ignore only after re-running that test.
+  - package-ecosystem: docker-compose
+    directory: "/"
+    schedule:
+      interval: weekly
+    cooldown:
+      default-days: 7
+    ignore:
+      - dependency-name: getmeili/meilisearch
+        versions: [">=1.41.0"]
+    labels: ["dependencies"]
+    commit-message:
+      prefix: "Docker"

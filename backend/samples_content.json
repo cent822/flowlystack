@@ -1,0 +1,113 @@
+{
+  "tag": "Sample",
+  "studio": [
+    {
+      "title": "Explain this code simply",
+      "text": "Explain the code below to someone who has never seen this language.\n\nSay what it does in two sentences first. Then walk through it step by step. Point out anything that looks risky or unusual.\n\n[paste the code here]"
+    },
+    {
+      "title": "Write a clear commit message",
+      "text": "Write a Git commit message for the changes below.\n\nFirst line: a short summary, under 60 characters, in the imperative mood. Then a blank line, then two or three sentences on why the change was needed. No emojis.\n\n[paste the diff here]"
+    },
+    {
+      "title": "Review my plan",
+      "text": "Here is my plan. Tell me what is missing, what could go wrong, and what I should do first.\n\nBe direct. Keep it to a short list, most important point first.\n\n[paste the plan here]"
+    },
+    {
+      "title": "Summarise with sources",
+      "text": "Summarise the text below in five bullet points.\n\nAfter each bullet, quote the short phrase from the text that supports it. If the text does not say something, write \"not stated\" instead of guessing.\n\n[paste the text here]"
+    }
+  ],
+  "linkshell": {
+    "name": "Plan a small website",
+    "brief": "A one-page website for a small project, in plain HTML and CSS, working in light and dark mode and published on a static host. Read the plan, tick the Brief, then follow the prompts one by one.",
+    "default_agent": "claude",
+    "tags": ["Sample"],
+    "phases": [
+      {
+        "title": "Phase 1 · Foundation",
+        "prompts": [
+          {
+            "key": "scaffold",
+            "title": "Set up the project",
+            "text": "Create the folders and files for a one-page website: index.html, css/style.css and js/main.js. Plain HTML and CSS only, no build step. Add a short README that says how to open it.",
+            "specs": [
+              {"title": "Design notes", "text": "Calm colours with one accent colour. Body text at 18px. An 8px spacing grid. It must look good in both light and dark mode."}
+            ]
+          },
+          {
+            "key": "layout",
+            "title": "Build the layout",
+            "text": "Build the header, a hero section with one headline and one button, three feature blocks and a footer. Use CSS variables for the colours so light and dark mode share one layout.",
+            "after": ["scaffold"]
+          }
+        ]
+      },
+      {
+        "title": "Phase 2 · Content",
+        "prompts": [
+          {
+            "key": "about",
+            "title": "Write the About section",
+            "text": "Write the About section: three short paragraphs about who the site is for and what it offers. Plain words, no jargon.",
+            "after": ["layout"]
+          },
+          {
+            "key": "contact",
+            "title": "Add a contact form",
+            "text": "Add a contact form with name, email and message. Check the fields in the browser. There is no server, so show a friendly message when the form is sent.",
+            "agent": "codex",
+            "after": ["layout"]
+          },
+          {
+            "key": "polish",
+            "title": "Polish the text",
+            "text": "Read every page out loud in your head. Shorten long sentences, fix repeated words and make the buttons say what they do.",
+            "after": ["about", "contact"]
+          }
+        ]
+      },
+      {
+        "title": "Phase 3 · Launch",
+        "prompts": [
+          {
+            "key": "test",
+            "title": "Test light and dark mode",
+            "text": "Check the site in light and dark mode at 360px, 768px and 1280px wide. List anything that breaks, then fix it.",
+            "after": ["polish"]
+          },
+          {
+            "key": "seo",
+            "title": "Add title and description tags",
+            "text": "Add a title and a meta description to every page, plus the tags that make a link preview look right when the page is shared.",
+            "after": ["polish"]
+          },
+          {
+            "key": "publish",
+            "title": "Publish the site",
+            "text": "Publish the site to a static host and give me the live address. Tell me how to update it later.",
+            "after": ["test", "seo"]
+          }
+        ]
+      }
+    ]
+  },
+  "collection": {
+    "name": "Getting started",
+    "description": "A short guide to FlowlyStack. Once an embedding model is chosen in Settings, you can ask this collection questions.",
+    "documents": [
+      {
+        "name": "what-is-flowlystack.md",
+        "text": "# What is FlowlyStack?\n\nFlowlyStack is a workspace that runs on your own computer. It keeps your prompts, your documents and your AI-agent usage in one place, as plain files you can open and back up.\n\n## The main parts\n\n- **Dashboard** shows how much you use Claude Code, Codex and Ollama. The limits it shows are estimates.\n- **Prompt Library** holds prompts captured from your agents. You can search them, tag them and keep versions.\n- **Prompt Studio** is where you write and refine prompts on purpose.\n- **Linkshell** plans a bigger job as connected blocks that you follow step by step.\n- **Collections** lets you import documents, search them by meaning and by keyword, and chat with them.\n- **Gallery and Lattice** show patterns in your prompts and how your prompts, documents and projects connect.\n\nEverything here is optional. Use the parts you like."
+      },
+      {
+        "name": "studio-and-linkshell.md",
+        "text": "# Prompt Studio and Linkshell\n\n## Prompt Studio\n\nWrite a prompt, save it, and improve it over time. Every save is a version, so you can compare two versions or go back. A prompt can have a title, tags, a note and a status: Draft, Refined or Final. You can export a prompt as a Markdown file and import it again.\n\nThe optional Assistant can suggest edits. It talks to a model only when you press Send, and it shows what it is about to send. A suggested edit is only a draft: nothing is saved until you save it.\n\n## Linkshell\n\nA Linkshell project is a plan made of blocks on a canvas. The Brief says what the project is for. Prompt blocks are the steps. Spec and Reference blocks hold extra context. Links show the order.\n\nPress Follow to work through the prompts one at a time. Copy puts a prompt on your clipboard exactly as written, ready to paste into your agent. You can also copy the whole plan as one prompt, or export it."
+      },
+      {
+        "name": "your-data-and-privacy.md",
+        "text": "# Your data and privacy\n\nYour prompts and documents are plain files in the prompts folder on your computer. Your login, settings and search caches are kept separately and can be rebuilt.\n\nFlowlyStack sends text to a chat model only when you press Send, and only to the model you picked. The screen shows what is sent. To search documents by meaning, their text also goes to your embedding model when they are indexed (your own Ollama unless you changed it). Nothing is sent to a chat model when you open a page, save a prompt or wait.\n\nA change an AI agent makes through the MCP connection can be undone from Settings. Sample content that you add can be removed again with one action in Settings, under General."
+      }
+    ]
+  }
+}
