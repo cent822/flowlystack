@@ -1,0 +1,15 @@
+[project]
+name = "flowlystack"
+version = "0.1.0"
+description = "A private workspace on your own computer to keep, connect and plan your AI prompts."
+requires-python = ">=3.10"
+# The single dependency list: run.sh installs from it on every start and a Dockerfile will do the same.
+# Exact versions on purpose (like the Meilisearch pin): upgrade deliberately and re-run the checks.
+dependencies = [
+    "fastapi==0.161.1",
+    "uvicorn[standard]==0.54.0",
+    "lancedb==0.41.0",   # Collections: embedded vector store
+    "pyarrow==26.0.0",   # LanceDB's table format
+    "pypdf==6.21.4",     # Collections: PDF text (BSD licence; PyMuPDF is AGPL)
+    "numpy==2.5.4",      # Gallery: word statistics, topic groups and the map (also a dependency of lancedb; pinned because Gallery imports it itself)
+]

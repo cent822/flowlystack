@@ -1,0 +1,26 @@
+# Nothing personal and nothing that is not needed to run the app goes into the image.
+.git
+.gitignore
+.venv
+__pycache__
+*.pyc
+.DS_Store
+.claude
+.env
+.env.*
+!.env.example
+flowlystack.config.json
+data
+prompts
+logs
+reference
+mockup
+icons
+docs
+scripts
+*.md
+!CHANGELOG.md
+DESIGN.md
+docker-compose*.yml
+Dockerfile
+.dockerignore

@@ -1,0 +1,113 @@
+name: CI
+
+# Runs on every push to main and on every pull request. Read-only: it can look at the code and nothing else.
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_call:   # the release workflow runs the same jobs first, so a release can never skip them
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+# Actions are pinned to a full commit hash (the comment names the version); Dependabot keeps them current.
+jobs:
+  leak-check:
+    name: Leak check
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
+        with:
+          python-version: "3.12"
+      # LEAK_PRIVATE is a repository secret holding the private rules (see scripts/leak_check.py). Pull requests from forks
+      # get no secrets, so for them only the public rules run; the maintainer's local pre-push hook covers the rest.
+      - name: Every tracked file
+        env:
+          LEAK_PRIVATE: ${{ secrets.LEAK_PRIVATE }}
+        run: python scripts/leak_check.py --tree
+      - name: The commits of this pull request (lines and messages)
+        if: github.event_name == 'pull_request'
+        env:
+          LEAK_PRIVATE: ${{ secrets.LEAK_PRIVATE }}
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: python scripts/leak_check.py --range "$BASE_SHA..$HEAD_SHA"
+      - name: The commits of this push (lines and messages)
+        if: github.event_name == 'push' && github.event.before != '0000000000000000000000000000000000000000'
+        env:
+          LEAK_PRIVATE: ${{ secrets.LEAK_PRIVATE }}
+          BEFORE_SHA: ${{ github.event.before }}
+          AFTER_SHA: ${{ github.sha }}
+        run: python scripts/leak_check.py --range "$BEFORE_SHA..$AFTER_SHA"
+
+  checks:
+    name: Checks (no server)
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
+        with:
+          python-version: "3.12"
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: "22"
+      # The same install the Dockerfile does: the one dependency list in pyproject.toml, exact versions.
+      - name: Install the dependencies
+        run: |
+          pip install uv==0.5.14
+          uv pip install --system -r pyproject.toml
+      - name: Run every check that needs no server
+        run: python scripts/run_ci_checks.py
+
+  windows-installer:
+    name: Windows installer (install.ps1)
+    runs-on: windows-latest
+    timeout-minutes: 10
+    # Informational for now: Windows has had limited testing, so a failure here is reported but does not turn the build red.
+    # Remove this line once the job has passed on a real Windows runner.
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      # install.ps1 targets Windows PowerShell 5.1, which is what "powershell" is on this runner (not "pwsh").
+      - name: Parse install.ps1
+        shell: powershell
+        run: |
+          $errors = $null
+          [void][System.Management.Automation.Language.Parser]::ParseFile("$PWD\install.ps1", [ref]$null, [ref]$errors)
+          if ($errors -and $errors.Count -gt 0) { $errors | ForEach-Object { Write-Host $_.Message }; exit 1 }
+          Write-Host "install.ps1 parses without errors"
+      # The script only calls `exit` on failure, so after a clean run the process exit code can be left over from the last docker
+      # command (Docker may not be ready on this runner, which a dry run allows). These steps therefore read the output instead.
+      - name: Help text
+        shell: powershell
+        run: |
+          $ErrorActionPreference = 'Continue'
+          $out = (powershell -NoProfile -ExecutionPolicy Bypass -File .\install.ps1 -Help 2>&1 | Out-String)
+          Write-Host $out
+          if ($out -notmatch 'FlowlyStack installer \(Windows\)') { Write-Host "the help text is missing"; exit 1 }
+      - name: Dry run writes nothing
+        shell: powershell
+        run: |
+          $ErrorActionPreference = 'Continue'
+          $dir = Join-Path $env:RUNNER_TEMP "flowlystack-dryrun"
+          $out = (powershell -NoProfile -ExecutionPolicy Bypass -File .\install.ps1 -DryRun -NoStart -Dir $dir 2>&1 | Out-String)
+          Write-Host $out
+          if ($out -match 'Error:') { Write-Host "the dry run reported an error"; exit 1 }
+          if ($out -notmatch 'dry run: nothing will be written') { Write-Host "the dry run did not announce itself"; exit 1 }
+          if ($out -notmatch 'Claude Code: .* Codex: ') { Write-Host "the dry run did not reach its summary"; exit 1 }
+          if (Test-Path $dir) { Write-Host "dry run created $dir"; exit 1 }
+          Write-Host "dry run left nothing behind"

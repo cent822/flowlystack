@@ -1,0 +1,5 @@
+#!/bin/sh
+# Refuses a push that carries a private path, key or name in any commit it would send. Bypass in an emergency: git push --no-verify
+root=$(git rev-parse --show-toplevel) || exit 0
+[ -f "$root/scripts/leak_check.py" ] || exit 0
+exec python3 "$root/scripts/leak_check.py" --push
