@@ -35,12 +35,27 @@ Made for students, researchers, people who use AI every day without being progra
 
 You need [Docker](https://www.docker.com/products/docker-desktop/) (free). Pick one way:
 
-| Your situation | Do this |
-|---|---|
-| **Mac or Linux, easiest** | `curl -fsSL https://raw.githubusercontent.com/cent822/flowlystack/main/install.sh \| bash` |
-| **You use Claude Code or Codex** | Tell your agent: *Read https://raw.githubusercontent.com/cent822/flowlystack/main/skills/flowlystack-install/SKILL.md and follow it to install FlowlyStack.* |
-| **Windows, or you like control** | Docker by hand: three short steps in the [Quick start](docs/quick-start.md#option-c-docker-by-hand-all-systems-including-windows) |
-| **Developer** | `git clone https://github.com/cent822/flowlystack.git`, then `./run.sh` |
+**Mac or Linux, easiest:**
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/cent822/flowlystack/main/install.sh | bash
+```
+
+**You use Claude Code or Codex:** tell your agent:
+
+```text
+Read https://raw.githubusercontent.com/cent822/flowlystack/main/skills/flowlystack-install/SKILL.md and follow it to install FlowlyStack.
+```
+
+**Windows, or you like control:** Docker by hand, three short steps in the [Quick start](docs/quick-start.md#option-c-docker-by-hand-all-systems-including-windows).
+
+**Developer:**
+
+```bash
+git clone https://github.com/cent822/flowlystack.git
+cd flowlystack
+./run.sh
+```
 
 Every way ends at **http://127.0.0.1:8372**. The step-by-step version, with Docker explained, is the **[Quick start](docs/quick-start.md)**.
 
