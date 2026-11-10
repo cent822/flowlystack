@@ -6,7 +6,7 @@ requires-python = ">=3.10"
 # The single dependency list: run.sh installs from it on every start and a Dockerfile will do the same.
 # Exact versions on purpose (like the Meilisearch pin): upgrade deliberately and re-run the checks.
 dependencies = [
-    "fastapi==0.161.1",
+    "fastapi==0.162.0",
     "uvicorn[standard]==0.54.0",
     "lancedb==0.41.0",   # Collections: embedded vector store
     "pyarrow==26.0.0",   # LanceDB's table format
