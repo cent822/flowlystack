@@ -28,6 +28,9 @@ def _path(agent):
     return PROMPTS_DIR / ".sources" / f"{agent}.json"
 
 
+PARSER = {"codex": 2}   # raise an agent's number when its reader learns a new file format: files read with the old rules are read again
+
+
 def _load(agent) -> dict:
     try:
         st = json.loads(_path(agent).read_text())
@@ -38,6 +41,9 @@ def _load(agent) -> dict:
     st["seen"] = set(st.get("seen") or [])
     for k in ("files", "cwd"):
         st.setdefault(k, {})
+    if PARSER.get(agent) and st.get("parse") != PARSER[agent]:
+        st["files"] = {}   # the reading rules changed: read every file again once (`seen` keeps what is already saved, so nothing doubles)
+        st["parse"] = PARSER[agent]
     return st
 
 

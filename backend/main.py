@@ -220,7 +220,7 @@ def prompts_setup():
     codex_cmd = _hook_command("capture_codex_prompt.py")   # Codex hooks.json has the same shape as Claude's
     codex_snippet = {"hooks": {"UserPromptSubmit": [{"hooks": [{"type": "command", "command": codex_cmd}]}]}}
     folder = "./prompts (next to your docker-compose.yml)" if os.environ.get("FLOWLYSTACK_IN_DOCKER") else str(PROMPTS_DIR)
-    return {"dir": folder, "command": cmd, "snippet": snippet,
+    return {"dir": folder, "command": cmd, "snippet": snippet, "in_docker": bool(os.environ.get("FLOWLYSTACK_IN_DOCKER")),
             "settings_file": "~/.claude/settings.json", "saved": len(promptstore.load_all()),
             "codex": {"command": codex_cmd, "snippet": codex_snippet, "settings_file": "~/.codex/hooks.json"}}
 

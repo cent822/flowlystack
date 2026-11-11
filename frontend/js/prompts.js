@@ -142,8 +142,11 @@ function refilter(patch = {}) {
   loadList().catch(() => {});
 }
 
+const SETUP = { docker: false };   // from the setup call: only Docker needs the .env hint on an empty import
+
 async function loadSetup() {
   const s = await api("prompts/setup");
+  SETUP.docker = !!s.in_docker;
   $("#pl-dir").textContent = s.dir; $("#pl-file").textContent = s.settings_file;
   $("#pl-snippet").textContent = JSON.stringify(s.snippet, null, 2);
   $("#pl-count").textContent = `${s.saved} saved`;
@@ -250,7 +253,10 @@ function wireList() {
     $("#pl-import-msg").textContent = "Importing…";
     try {
       const r = await api("prompts/import", { method: "POST" });
-      $("#pl-import-msg").textContent = `Imported ${r.imported}, skipped ${r.skipped} already saved`;
+      // No transcript files at all: the history folder is missing or empty, which is not the same as "nothing new".
+      $("#pl-import-msg").textContent = r.files === 0
+        ? `No Claude Code history found. ${SETUP.docker ? "In Docker, set CLAUDE_PROJECTS_DIR in your .env file (see Connect Claude Code and Codex in the docs), then run docker compose up -d." : "Claude Code writes it to ~/.claude/projects once you have used it."}`
+        : `Imported ${r.imported}, skipped ${r.skipped} already saved`;
       await Promise.all([loadList(), loadSetup()]);
     } catch (e) { $("#pl-import-msg").textContent = "Import failed"; }
   });

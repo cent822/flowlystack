@@ -14,6 +14,7 @@ ROOT = Path(__file__).resolve().parent.parent
 tmp = Path(tempfile.mkdtemp(prefix="flowlystack-codex-prompts-check-"))
 os.environ["CODEX_HOME"] = str(tmp / "codex")                    # before the backend is imported: config reads it once
 os.environ["FLOWLYSTACK_CODEX_DB"] = str(tmp / "codex.db")
+os.environ["FLOWLYSTACK_PROMPTS_DIR"] = str(tmp / "state-prompts")     # where the Import button keeps its state file
 sys.path.insert(0, str(ROOT))
 from backend import promptstore  # noqa: E402
 from backend.promptsync import codex as importer  # noqa: E402
@@ -73,6 +74,36 @@ check("a second pass saves nothing again", importer.pull(st, root) == 0)
 con = db.connect()
 ingest.scan(con)
 check("Dashboard counts 3 prompts", con.execute("SELECT COUNT(*) FROM prompts").fetchone()[0] == 3)
+
+# 3. Files read to the end by the OLD reader (which found no prompts) must be read again once, or the fix never shows on an
+#    install that already had Live sync / the Dashboard running. The remembered positions are what an old install has on disk.
+import sqlite3  # noqa: E402
+
+sizes = {str(p): p.stat().st_size for p in importer._rollouts()}
+state_dir = tmp / "state-prompts" / ".sources"
+state_dir.mkdir(parents=True)
+(state_dir / "codex.json").write_text(json.dumps({"enabled": True, "imported": 0, "seen": [], "files": sizes, "cwd": {}}))   # no "parse" key
+from backend import promptsync  # noqa: E402
+r = promptsync.run_once("codex")
+check("an old install's Import re-reads files it had skipped", r["imported"] == 3)
+check("the state now remembers the new reading rules", json.loads((state_dir / "codex.json").read_text()).get("parse") == promptsync.PARSER["codex"])
+check("pressing Import again saves nothing more", promptsync.run_once("codex")["imported"] == 0)
+
+old_db = tmp / "old.db"
+raw = sqlite3.connect(old_db)
+raw.executescript(db.SCHEMA)
+raw.executemany("INSERT INTO files VALUES(?,?)", sizes.items())   # user_version is 0, as before the change
+raw.commit()
+raw.close()
+db.CODEX_DB_PATH = old_db
+con2 = db.connect()
+ingest.scan(con2)
+check("an old Dashboard cache re-reads its files and counts 3 prompts", con2.execute("SELECT COUNT(*) FROM prompts").fetchone()[0] == 3)
+n_before = con2.execute("SELECT COUNT(*) FROM turns").fetchone()[0]
+con2.execute("DELETE FROM files")
+ingest.scan(con2)
+check("reading a file twice does not double anything", con2.execute("SELECT COUNT(*) FROM prompts").fetchone()[0] == 3
+      and con2.execute("SELECT COUNT(*) FROM turns").fetchone()[0] == n_before)
 
 print(f"\n{len(fails)} failed" if fails else "\nall passed")
 sys.exit(1 if fails else 0)

@@ -297,7 +297,8 @@ def import_transcripts(projects_dir: Path, root: Path | None = None) -> dict:
         known.setdefault((o.get("session_id", ""), o["prompt"]), []).append(o.get("ts") or 0)
     imported = skipped = 0
     batch: set[tuple[str, str, float]] = set()   # same line twice in one run (copied history); real repeats differ in time
-    for path in sorted(projects_dir.glob("*/*.jsonl")):
+    files = sorted(projects_dir.glob("*/*.jsonl"))   # no files at all means the history folder is missing or empty: the page says so
+    for path in files:
         try:
             lines = path.read_text(errors="replace").splitlines()
         except OSError:
@@ -321,7 +322,7 @@ def import_transcripts(projects_dir: Path, root: Path | None = None) -> dict:
             write_prompt(text, ts, sid, o.get("cwd") or "", source="import", root=root)
             batch.add((sid, text, ts))
             imported += 1
-    return {"imported": imported, "skipped": skipped}
+    return {"imported": imported, "skipped": skipped, "files": len(files)}
 
 
 def summarize(items: list[dict]) -> dict:

@@ -2,6 +2,8 @@ import sqlite3
 
 from ...config import CODEX_DB_PATH
 
+PARSER_VERSION = 2   # 2: typed prompts also come from current Codex's UserMessage items (see promptstore.codex_typed_text)
+
 SCHEMA = """
 CREATE TABLE IF NOT EXISTS files (path TEXT PRIMARY KEY, offset INTEGER NOT NULL DEFAULT 0);
 CREATE TABLE IF NOT EXISTS sessions (
@@ -32,4 +34,10 @@ def connect() -> sqlite3.Connection:
     con.row_factory = sqlite3.Row
     con.execute("PRAGMA journal_mode=WAL")
     con.executescript(SCHEMA)
+    if con.execute("PRAGMA user_version").fetchone()[0] < PARSER_VERSION:
+        # The reader learned a new file format: forget how far each rollout was read so every file is read again once.
+        # Every table is written with INSERT OR IGNORE / guarded updates, so reading twice changes nothing but what was missed.
+        con.execute("DELETE FROM files")
+        con.execute(f"PRAGMA user_version = {PARSER_VERSION}")
+        con.commit()
     return con
