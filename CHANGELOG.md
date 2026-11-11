@@ -2,6 +2,14 @@
 
 What changed in each release, newest first. The app shows this page under **What's new**.
 
+## [0.1.1] - 2026-11-11
+A small fix release. Update with the steps in [Updating and backup](docs/updating-and-backup.md).
+
+### Fixed
+- **Codex prompts now import with current Codex.** Newer Codex versions record a typed prompt in a different way, so the Prompt Library's Codex **Import**, **Live sync** and the Dashboard's prompt count found nothing. All of them now read both the new and the older format. Files that were read before are read again once, so prompts that were missed show up by themselves.
+- **A clearer message when no Claude Code history is found.** Import used to say "Imported 0, skipped 0". It now says that no history folder was found and, in Docker, which line to add to your `.env` file.
+- **Docker by hand starts without a `.env` file.** The compose file now pulls the published image by default instead of one you had to build yourself.
+
 ## [0.1.0] - 2026-11-10
 First release. Everything runs on your own computer; your prompts and documents stay in plain files you own.
 

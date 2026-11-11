@@ -1,6 +1,6 @@
 [project]
 name = "flowlystack"
-version = "0.1.0"
+version = "0.1.1"
 description = "A private workspace on your own computer to keep, connect and plan your AI prompts."
 requires-python = ">=3.10"
 # The single dependency list: run.sh installs from it on every start and a Dockerfile will do the same.
