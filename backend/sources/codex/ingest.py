@@ -8,6 +8,7 @@ import json
 import os
 from datetime import datetime
 
+from ... import promptstore
 from ...config import CODEX_HOME
 
 
@@ -45,9 +46,9 @@ def _line(con, o, sid, pos, ts):
     elif t == "turn_context":
         cwd = pl.get("cwd")
         _touch(con, sid, model=pl.get("model"), cwd=cwd, project=os.path.basename(cwd) if cwd else None)
-    elif t == "event_msg" and sub == "user_message":
+    elif (typed := promptstore.codex_typed_text(o)) is not None:   # old `user_message` or current `UserMessage` item
         con.execute("INSERT OR IGNORE INTO prompts VALUES(?,?,?)", (f"{sid}:{pos}", sid, ts))
-        con.execute("UPDATE sessions SET title=? WHERE id=? AND title IS NULL", (_title(pl.get("message")), sid))
+        con.execute("UPDATE sessions SET title=? WHERE id=? AND title IS NULL", (_title(typed), sid))
     elif t == "event_msg" and sub == "token_count":
         info = pl.get("info")
         if info:

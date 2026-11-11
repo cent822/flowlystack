@@ -1,6 +1,7 @@
-"""Codex prompts: the `user_message` events in ~/.codex rollout files (read-only).
+"""Codex prompts: the typed-prompt events in ~/.codex rollout files (read-only).
 
-Only `user_message` events are prompts you typed; other user-role messages in the files are injected context.
+Older Codex writes `user_message` events, current Codex writes `UserMessage` items (see promptstore.codex_typed_text);
+other user-role messages in the files are injected context.
 The VS Code extension wraps a prompt in an "IDE context" block: only the text after its request marker is kept.
 Each prompt is keyed by session and byte position in the file, never by its text, so a prompt sent twice stays twice.
 """
@@ -61,9 +62,9 @@ def pull(st, root) -> int:
                 pl = o.get("payload") or {}
                 if o.get("type") in ("session_meta", "turn_context") and pl.get("cwd"):
                     st["cwd"][sid] = pl["cwd"]
-                elif o.get("type") == "event_msg" and pl.get("type") == "user_message":
+                elif (typed := promptstore.codex_typed_text(o)) is not None:
                     k = f"{sid}:{pos}"
-                    text, ts = promptstore.clean_codex_prompt(pl.get("message")), _ts(o.get("timestamp"))
+                    text, ts = promptstore.clean_codex_prompt(typed), _ts(o.get("timestamp"))
                     if k in st["seen"] or not text or ts is None:
                         continue
                     if hooked is None:

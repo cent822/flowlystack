@@ -82,6 +82,23 @@ CODEX_WRAP = "# Context from my IDE setup"
 CODEX_MARKER = "## My request for Codex:"
 
 
+def codex_typed_text(o: dict):
+    """The text of a prompt you typed, from one rollout line, or None when the line is not a typed prompt.
+    Older Codex writes an `event_msg` of type `user_message` (a `message` string). Current Codex writes an `event_msg` of type
+    `item_completed` whose item is a `UserMessage` (`content` is a list of text parts). Other user-role messages (AGENTS.md,
+    environment context) are injected context and are never typed prompts."""
+    if o.get("type") != "event_msg":
+        return None
+    pl = o.get("payload") or {}
+    kind = pl.get("type")
+    if kind == "user_message":
+        return pl.get("message") if isinstance(pl.get("message"), str) else ""
+    if kind == "item_completed" and (pl.get("item") or {}).get("type") == "UserMessage":
+        parts = (pl["item"].get("content") or [])
+        return "\n".join(p["text"] for p in parts if isinstance(p, dict) and isinstance(p.get("text"), str))
+    return None
+
+
 def clean_codex_prompt(text) -> str:
     """The Codex VS Code extension wraps a prompt in an IDE-context block: keep only the request after its marker."""
     text = text if isinstance(text, str) else ""
