@@ -71,6 +71,8 @@ docker compose up -d
 
 The first start downloads the app, which takes a minute or two.
 
+**See your own history (optional):** the app starts empty. To show your Claude Code and Codex usage, add the folder lines from [Connect Claude Code and Codex](connect-agents.md#if-you-set-up-docker-by-hand) to a `.env` file next to `docker-compose.yml`, then run `docker compose up -d` again. For the Ollama view, add the Open WebUI line from the same page.
+
 ### Option D: From the source code (for developers)
 
 You need Git and [uv](https://docs.astral.sh/uv/).
