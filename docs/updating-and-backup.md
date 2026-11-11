@@ -59,6 +59,8 @@ git pull
 
 Copy the `prompts` folder to a safe place (an external drive, a cloud folder, a Git repository). That's all your work, as plain files. It is fine to copy while the app is running.
 
+If you already back up your computer (Time Machine, a cloud-sync folder), your `prompts` folder is covered because it is a normal folder. Your login and settings live in a Docker volume that those tools can't see, so back them up with the command below, or keep them in a normal folder with a bind-mount (advanced).
+
 ### Your login and settings (Docker)
 
 These live in a Docker volume, so they need one command. Stopping the app first keeps the copy clean. Run this in your `flowlystack` folder:
