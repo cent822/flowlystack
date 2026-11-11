@@ -11,8 +11,8 @@ name: flowlystack
 
 services:
   flowlystack:
-    # TODO at release: default to the published image, ghcr.io/<owner>/flowlystack:latest.
-    image: ${FLOWLYSTACK_IMAGE:-flowlystack:local}
+    # The published image. Set FLOWLYSTACK_IMAGE in .env to pick a version (docs/updating-and-backup.md), or to flowlystack:local for an image you built yourself.
+    image: ${FLOWLYSTACK_IMAGE:-ghcr.io/cent822/flowlystack:latest}
     build: .
     # A fixed name: the capture hook on the host runs `docker exec -i <name> python hooks/capture_prompt.py`. A second install on the same
     # computer sets FLOWLYSTACK_CONTAINER to another name.
