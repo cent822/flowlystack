@@ -893,7 +893,8 @@ def export_plan(pid: str, root: Path | None = None, portable: bool = False) -> d
         for b in bs:
             p = _parts(proj, b["id"])
             prompts.append({"n": num[b["id"]], "id": b["id"], "title": b["title"] or "Untitled", "agent": b.get("agent") or proj["project"]["default_agent"], "after": sorted(after[b["id"]]),
-                            "text": p["text"], "specs": p["specs"], "references": [f"{folder}/{a}" for a in p["files"]] + p["urls"]})
+                            "text": p["text"], "specs": p["specs"], "references": [f"{folder}/{a}" for a in p["files"]] + p["urls"],
+                            "weblinks": list(p["urls"])})   # `references` keeps files then links (as before); `weblinks` repeats the links on their own
             if p["notes"]:   # only when there is one, so a plan without notes keeps its old shape
                 prompts[-1]["reference_notes"] = {f"{folder}/{a}": n for a, n in p["notes"].items() if a in p["files"]}
         phases.append({"title": title, "prompts": prompts})
@@ -958,7 +959,8 @@ def _fence(text: str, lang: str = "text") -> list[str]:
 
 def export_markdown(pid: str, root: Path | None = None, portable: bool = False) -> str | None:
     """A spec pack to drop into a repo's docs/, built from `export_plan`: name, brief, then each phase with its Prompts in run order (each prompt in
-    a block fenced as `prompt`, then its Specs as `spec` blocks and its Reference files, links and notes as one `reference` block). A clean plan: no status."""
+    a block fenced as `prompt`, then its Specs as `spec` blocks, its Reference files and notes as one `reference` block and its web links as one
+    `weblink` block). A clean plan: no status."""
     plan = export_plan(pid, root, portable)
     if not plan:
         return None
@@ -970,7 +972,7 @@ def export_markdown(pid: str, root: Path | None = None, portable: bool = False) 
             v = v.replace("\r\n", "\n").rstrip("\n")
             out.append(f"{key}: {json.dumps(v)}" if "\n" not in v or v[:1].isspace() else f"{key}: |-\n" + "\n".join("  " + l if l else "" for l in v.split("\n")))
         out += ["---", ""]
-    out += [f"# {plan['name']}", "", "> A FlowlyStack Linkshell plan. Work through the prompts in order; each lists the specs and reference files that belong with it." + (" The reference files are in the `assets/` folder next to this file." if portable else ""), ""]
+    out += [f"# {plan['name']}", "", "> A FlowlyStack Linkshell plan. Work through the prompts in order; each lists the specs, reference files and web links that belong with it." + (" The reference files are in the `assets/` folder next to this file." if portable else ""), ""]
     if plan["brief"]:
         out += ["## Brief", "", plan["brief"], ""]
     for ph in plan["phases"]:
@@ -980,9 +982,12 @@ def export_markdown(pid: str, root: Path | None = None, portable: bool = False) 
             out += [f"### {p['n']}. {p['title']}", "", meta, "", *_fence(p["text"], "prompt"), ""]
             for sp in p["specs"]:
                 out += [f"#### Spec: {sp['title']}", "", *_fence(sp["text"], "spec"), ""]
-            if p["references"]:   # the files and links of every Reference block linked to this prompt, each file with its note, in one block
-                lines = [x for r in p["references"] for x in [f"- {r}"] + (_note_lines(p["reference_notes"][r]) if r in p.get("reference_notes", {}) else [])]
+            files = p["references"][:len(p["references"]) - len(p["weblinks"])]   # `references` is the files, then the links: the files are the front part
+            if files:   # the files of every Reference block linked to this prompt, each with its note, in one block
+                lines = [x for r in files for x in [f"- {r}"] + (_note_lines(p["reference_notes"][r]) if r in p.get("reference_notes", {}) else [])]
                 out += ["#### References", "", *_fence("\n".join(lines), "reference"), ""]
+            if p["weblinks"]:   # the web links of those Reference blocks, in their own block
+                out += ["#### Web links", "", *_fence("\n".join(f"- {u}" for u in p["weblinks"]), "weblink"), ""]
     return "\n".join(out).rstrip() + "\n"
 
 

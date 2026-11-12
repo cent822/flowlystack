@@ -368,11 +368,14 @@ assert md.index("## Phase 1") < md.index("### 1. Scaffold") < md.index("## Other
 assert "## Phase 1" in md and "Scaffold {{site}}" in md and ls.asset_path(pid, a, ROOT).name in md
 assert "```prompt\nScaffold {{site}}" in md and "```text" not in md and "```markdown" not in md, "the fences are labelled prompt, spec and reference"
 assert "#### References\n\n```reference\n- " in md and "#### Spec: Design tokens" not in md, "the Design tokens spec is switched off for Scaffold earlier in this check"
+# web links get their own fence and heading, after the References block; the reference fence holds files only
+assert "#### Web links\n\n```weblink\n- https://example.com\n```" in md and md.index("```reference") < md.index("```weblink")
+assert "https://example.com" not in md[md.index("```reference"):md.index("```", md.index("```reference") + 3)]
 assert ls.export_markdown("ls-ffffffffffff", ROOT) is None
 pl = ex["plan"]
 flat = [p for ph in pl["phases"] for p in ph["prompts"]]
 assert pl["name"] == "Site" and pl["brief"].startswith("A portfolio") and [p["n"] for p in flat] == list(range(1, len(flat) + 1))
-assert flat[0]["title"] == "Scaffold" and all(set(p) == {"n", "id", "title", "agent", "after", "text", "specs", "references"} for p in flat)
+assert flat[0]["title"] == "Scaffold" and all(set(p) == {"n", "id", "title", "agent", "after", "text", "specs", "references", "weblinks"} for p in flat)
 assert all(x < p["n"] for p in flat for x in p["after"]) and "status" not in json.dumps(pl)
 assert "Agent: claude" in md and "#### " in md or not any(p["specs"] or p["references"] for p in flat)
 step("markdown spec pack: brief, frames, prompts in run order with reference paths")
@@ -389,12 +392,12 @@ ls.save_text(rvid, "s1", "Teal on dark.", "", ROOT)
 asm = ls.assemble(rvid, "p1", root=ROOT)
 assert "## Colours\nTeal on dark." in asm["text"] and "https://example.com/ref" in asm["text"], asm["text"]
 rpl = ls.export_plan(rvid, ROOT)["phases"][0]["prompts"][0]
-assert [s["title"] for s in rpl["specs"]] == ["Colours"] and rpl["references"] == ["https://example.com/ref"], rpl
+assert [s["title"] for s in rpl["specs"]] == ["Colours"] and rpl["references"] == ["https://example.com/ref"] and rpl["weblinks"] == ["https://example.com/ref"], rpl
 rg["links"].append(link("s1", "p1", "context"))   # linked both ways: still attached once
 rg = ls.save_graph(rvid, rg, rg["rev"], ROOT)
 assert ls.assemble(rvid, "p1", root=ROOT)["text"].count("## Colours") == 1 and len(ls.export_plan(rvid, ROOT)["phases"][0]["prompts"][0]["specs"]) == 1
 rmd = ls.export_markdown(rvid, ROOT)
-assert "```spec\nTeal on dark.\n```" in rmd and "```reference\n- https://example.com/ref\n```" in rmd
+assert "```spec\nTeal on dark.\n```" in rmd and "```weblink\n- https://example.com/ref\n```" in rmd and "```reference" not in rmd and "#### References" not in rmd
 assert rmd.count("```prompt") == 1 and "```text" not in rmd
 assert ls.trash(rvid, ROOT) and ls.purge(rvid, ROOT)   # the later checks count the projects: leave none behind
 step("a Spec or Reference linked from the prompt is attached like one linked into it, once; both exports carry them")
