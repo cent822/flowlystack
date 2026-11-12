@@ -109,7 +109,7 @@ Codex hooks must be reviewed by you, so the installer never edits the Codex file
 1. Copy the shown text into `~/.codex/hooks.json` (merge it with any hooks already there).
 2. In Codex, type `/hooks` and **trust** the new hook.
 
-Alongside the hook there are two buttons: **Import** (imports what is new) and a **Live sync** switch (keeps picking up new prompts every few seconds while it is on). Live sync works for every Codex client, including the Codex app and VS Code. Nothing is imported until you press Import or switch Live sync on.
+Alongside the hook there are two buttons: **Import** (imports what is new) and a **Live sync** switch (keeps picking up new prompts every few seconds while it is on). Live sync works for every Codex client, including the Codex app and VS Code. Nothing is imported until you press Import or switch Live sync on. Turn Live sync on early: Import can only read what Codex still has on your computer, and Codex may remove its own old session files, while a prompt FlowlyStack has saved stays.
 
 ### Open WebUI
 
