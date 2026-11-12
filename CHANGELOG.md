@@ -2,6 +2,12 @@
 
 What changed in each release, newest first. The app shows this page under **What's new**.
 
+## [0.1.2] - 2026-11-12
+A small improvement release. Update with the steps in [Updating and backup](docs/updating-and-backup.md).
+
+### Improved
+- **Linkshell exports keep web links apart from files.** In the Markdown export, a prompt's Reference files stay in the `reference` block and its web links now have their own `#### Web links` block, labelled `weblink` (left out when a prompt has none). In the JSON export each prompt gets a `weblinks` list; `references` is unchanged.
+
 ## [0.1.1] - 2026-11-11
 A small fix release. Update with the steps in [Updating and backup](docs/updating-and-backup.md).
 
