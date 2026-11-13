@@ -75,6 +75,10 @@ The **Lattice** is a **map of your knowledge**. Every prompt, Studio prompt, doc
 - **Similar lines:** set how many similar neighbours each dot gets and the minimum score, and hide dots with no connection.
 - **Refresh** rebuilds the picture after you add things. It also rebuilds in the background by itself.
 
+### Ask an agent about it (MCP)
+
+A connected agent can read the Lattice: its overview, a search by title, what one item is connected to, the shortest chain between two items, and the entities with their quotes. The agent can also rebuild the base map, as the Refresh button does, and list the items no entity run has covered yet. Reading needs only a read-only token; see the [MCP guide](mcp-setup.md). Lines marked *similar* stay estimates when an agent reads them.
+
 ### Entities: people, tools and ideas (optional)
 
 On top of the base map, you can add **entities**: the people, tools and concepts found inside your items, drawn as triangles linked to the items that mention them. Two optional ways to add them, and nothing happens until you start one:

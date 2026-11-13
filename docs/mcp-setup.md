@@ -36,17 +36,18 @@
 - Search your **Collections** (the documents you imported, plus your prompts).
 - Read your **Linkshell** projects: the plan, each step, and the exact text you would paste.
 - Read the patterns in your **Gallery** (groups, repeated prompts).
-- Ask your **Lattice** what is connected to what: which prompts, Studio prompts and documents are in the same collection, carry the same tag, or are close in meaning.
+- Ask your **Lattice** what is connected to what: which prompts, Studio prompts and documents are in the same collection, carry the same tag, or are close in meaning. An agent can also search it, follow the shortest chain between two items, and read the **entities** (people, tools, ideas) that were added to it, each with the exact quotes where it appears.
 
 **What an agent can do only if you switch on writing for its token:**
 
 - Save a **new** prompt in Studio (always as a *draft*), or add a **new version** to a Studio prompt.
 - Create a **new** Linkshell project from a plan.
+- Add **entities** (people, tools, ideas) and the links between them to your Lattice. Every link comes with a quote copied from your own item, and FlowlyStack checks that the quote is really there. One agent run is one batch, so one click undoes all of it.
 
 **What an agent can never do:**
 
 - Delete anything. Overwrite anything. Change a Library prompt. Open your Settings, passwords or other tokens. Send your text to any model by itself.
-- Every item an agent creates is tagged **`via-mcp`**, listed in **Settings > MCP > Recent agent activity**, and can be put back with **Undo**.
+- Every prompt or project an agent creates is tagged **`via-mcp`**. Everything an agent saves, Lattice additions included, is listed in **Settings > MCP > Recent agent activity** and can be put back with **Undo**.
 
 > The tools only add things. Nothing an agent does through FlowlyStack can remove your work.
 
@@ -231,6 +232,7 @@ You do not need special words. Say what you want, and the agent picks the right 
 - "What are the prompts in my Studio that are still drafts?"
 - "Which prompts do I keep retyping?" (This uses the Gallery.)
 - "What in my FlowlyStack is related to my *Dough plan* Studio prompt?" (This uses the Lattice. Lines marked *similar* are the app's estimate of closeness in meaning, not facts.)
+- "How is my *Dough plan* prompt connected to my *Pizza notes* document?" (The Lattice again: the agent follows the shortest chain between the two.)
 
 **Use your own material as context**
 
@@ -244,6 +246,10 @@ You do not need special words. Say what you want, and the agent picks the right 
 **Plan a project** *(needs a token that is allowed to write)*
 
 - "Help me plan a small website in three phases. When I agree, create it as a Linkshell project."
+
+**Grow your Lattice** *(needs a token that is allowed to write)*
+
+- "Read the documents in my *Kitchen notes* collection, find the people and tools in them, show me what you would add to my Lattice, and if I agree, add them." (Each link must carry a quote from the document, and FlowlyStack refuses it if the quote is not really there. Open the **Lattice** page afterwards and switch on **Entities** to see them.)
 
 Afterwards, open **Studio** or **Linkshell** in FlowlyStack and look at what was made. **Reload the page if you do not see it yet**: FlowlyStack's pages do not refresh by themselves when an agent saves something.
 
@@ -266,12 +272,15 @@ You can switch back any time with **Make read-only**. The token's secret does no
 | `studio_create` | Saves a **new** prompt in Studio as a **draft**, tagged `via-mcp`. It can link back to the Library prompt it came from. |
 | `studio_save_version` | Adds a **new version** to a Studio prompt. The old versions stay in its history. |
 | `linkshell_create_project_from_plan` | Creates a **new** Linkshell project from a plan (phases of prompts, with optional reference texts). The Brief is left **unticked** so you read the plan first. |
+| `graph_start_run` | Opens a **run** for the Lattice, so everything an agent adds in it is one batch that one click undoes. |
+| `graph_add` | Adds **entities** (people, tools, ideas) and the links between them to your Lattice. Each link needs the item it came from and a quote copied exactly from that item, or the whole call is refused. It only adds: nothing is deleted or changed. |
 
 **Undo.** **Settings > MCP > Recent agent activity** lists everything agents saved (newest first), with the token name and the time. Each line has an **Undo** button:
 
 - A new prompt or a new project goes to the **Trash**. You can restore it from the Trash page.
 - A new prompt version is replaced by the text before it (the agent's version stays in the history).
 - If **you edited that prompt after the agent did**, Undo refuses, so your own work is never overwritten. Use the prompt's version history instead.
+- Entities and links an agent added to the Lattice are **hidden everywhere in the Lattice**. Nothing is deleted, and you can also hide or delete a run on the Lattice page.
 
 If you like what an agent made, just leave it there. It is yours.
 
