@@ -69,6 +69,18 @@ def _bool(v):
     return v
 
 
+def _flag(v):
+    """A true/false that an environment variable can also spell: on/off, yes/no, 1/0, true/false (any case)."""
+    if isinstance(v, bool):
+        return v
+    s = str(v).strip().lower()
+    if s in ("1", "true", "yes", "on"):
+        return True
+    if s in ("0", "false", "no", "off"):
+        return False
+    raise ValueError("must be on or off")
+
+
 def _url(v):
     if not isinstance(v, str):
         raise ValueError("must be text")
@@ -148,6 +160,7 @@ LEAVES = {
     "knowledge.gallery_ignore_words": ("", _text(2000), None),   # words the Gallery leaves out of its word charts (comma or space separated)
     # In Docker (FLOWLYSTACK_IN_DOCKER=1) 127.0.0.1 is the container itself, so the default points at the computer that runs Docker; still editable in Settings.
     "connections.ollama.url": ("http://host.docker.internal:11434" if os.environ.get("FLOWLYSTACK_IN_DOCKER") else "http://127.0.0.1:11434", _url, "FLOWLYSTACK_OLLAMA_URL"),
+    "updates.check": (True, _flag, "FLOWLYSTACK_UPDATE_CHECK"),   # on by default: the server asks GitHub for the latest release at most once a day (backend/updatecheck.py); off = no request at all
     "mcp.share_hidden": (False, _bool, None),   # agents may read entities from runs the user hid on the Lattice page (off: hidden stays hidden)
     "mcp.enabled": (False, _bool, None),   # off until the user switches it on (Settings > MCP); /mcp answers 404 while off
 }

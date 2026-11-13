@@ -67,7 +67,7 @@ Every way ends at **http://127.0.0.1:8372**. The step-by-step version, with Dock
 
 ## Privacy in three lines
 
-- Your data lives in plain files in the `prompts` folder and a small database on your computer. No analytics, no telemetry, no external requests (even the fonts are bundled).
+- Your data lives in plain files in the `prompts` folder and a small database on your computer. No analytics, no telemetry (even the fonts are bundled). The one outside request is the update notice: when you are online, the server asks GitHub for the latest release at most once a day and sends nothing about you. It is on by default and you can switch it off in Settings (see [Privacy](docs/privacy.md)).
 - Text goes to a model only when you press **Send** (and, to search your documents by meaning, to the embedding model you chose when they are indexed). It goes only to models you picked, and the app shows what is sent. Local models through Ollama keep everything on your machine. Details: [Privacy](docs/privacy.md).
 - The app only reads the history folders of your AI tools, and nothing else in them. It never reads login or credential files.
 

@@ -4,6 +4,7 @@ import { showSettings } from "./settings.js";
 import { showWhatsNew } from "./whatsnew.js";
 import "./account.js";
 import "./samples.js";
+import "./updatenotice.js";
 import { isDark, setMode } from "./theme.js";
 import { showPrompts } from "./prompts.js";
 import { showStudio } from "./studio.js";

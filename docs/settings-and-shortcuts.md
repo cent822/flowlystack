@@ -13,6 +13,7 @@ Open **Settings** from the account button at the bottom of the left sidebar, or 
 | **General** | **Theme**: *System* (follows your computer), *Day* or *Night*. It applies at once. **Sample content**: add or remove the example prompts, project plan and documents (see the [Quick start](quick-start.md)). |
 | **Account** | Your **profile picture**, your **name** (the one you log in with; changing it asks for your password), your **password**, optional **two-step login** and **Sign out**. Details in [Login and remote access](remote-access.md). If you turned login off, this page says so. |
 | **About** | The version you are running, a link to **What's new** (the release notes, which open without a connection) and the credits. |
+| **Updates** | One switch, **Tell me about new versions** (on by default). When you are online, FlowlyStack asks GitHub for the latest release, at most once a day, and shows a notice after login if a newer one exists. Nothing about you is sent, and it never updates the app by itself. Off means no request at all. Details in [Privacy](privacy.md). |
 | **Keyboard** | Every shortcut, with a button to change each one (see below). |
 
 ### Services

@@ -521,6 +521,11 @@ td .sub { color: var(--text-muted); font: 400 var(--fs-meta) var(--font-code); }
   background-color: var(--canvas); background-image: linear-gradient(160deg, var(--panel-bg-2), var(--panel-bg)); border: 1px solid color-mix(in srgb, var(--edge) 45%, var(--hairline)); border-radius: var(--radius-lg);
   box-shadow: var(--shadow-md), 0 0 28px color-mix(in srgb, var(--edge) 22%, transparent); animation: cb-toast-in var(--dur-base) var(--ease); letter-spacing: var(--track-control); }
 @keyframes cb-toast-in { from { opacity: 0; transform: translate(-50%, 8px); } }
+/* The update notice's toast: a message with the two update commands under it (frontend/js/updatenotice.js). */
+.cb-toast-col { display: flex; flex-direction: column; gap: var(--spacing-xs); min-width: 0; }
+.cb-toast-hint { margin-top: var(--spacing-xs); color: var(--text-muted); font-size: var(--fs-label); letter-spacing: var(--track-label); font-weight: var(--fw-firm); }
+.cb-toast-row { display: flex; align-items: center; gap: var(--spacing-md); }
+.cb-toast-row code { flex: 1; min-width: 0; white-space: pre; overflow-x: auto; font-family: var(--font-code); font-size: var(--fs-label); color: var(--text-primary); }
 @media (prefers-reduced-motion: reduce) { .cb-toast { animation: none; } }
 
 /* ---- prompt agent labels and the Other agents sync rows ---- */
@@ -1699,6 +1704,7 @@ a.pr-menuitem { text-decoration: none; }
 /* ---- What's new page, Settings > About and the version line in the account menu ---- */
 .acct-ver { display: block; margin-top: var(--spacing-xs); padding: var(--spacing-sm) var(--spacing-md) var(--spacing-xs); border-top: 1px solid var(--hairline); font-size: var(--fs-label); letter-spacing: var(--track-label); color: var(--text-muted); text-decoration: none; }
 .acct-ver:hover { color: var(--text-primary); }
+.acct-ver-new { color: var(--link); font-weight: var(--fw-firm); }   /* update notice: "v0.1.3 available" on the version line */
 .acct-ver[hidden] { display: none; }
 .wn-list { display: grid; gap: var(--spacing-xl); max-width: 860px; }
 .wn-meta { display: inline-flex; align-items: center; gap: var(--spacing-md); }

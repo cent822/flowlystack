@@ -9,7 +9,7 @@ from fastapi.staticfiles import StaticFiles
 
 from pydantic import BaseModel
 
-from . import about_api, assistant_api, auth_api, collections as co, collections_api, gallery_api, kgraph_api, linkshell, linkshell_api, mcp_api, profile_api, promptstore, promptsync, queries, samples_api, settings_api, sources, studio_api
+from . import about_api, assistant_api, auth_api, collections as co, collections_api, gallery_api, kgraph_api, linkshell, linkshell_api, mcp_api, profile_api, promptstore, promptsync, queries, samples_api, settings_api, sources, studio_api, update_api
 from .config import CONFIG, FRONTEND_DIR, PROJECTS_DIR, PROMPTS_DIR, ROOT
 from .db import connect
 from .ingest import scan
@@ -23,6 +23,7 @@ app.include_router(studio_api.router)   # Prompt Studio: /api/studio (before the
 app.include_router(linkshell_api.router)   # Linkshell: /api/linkshell
 app.include_router(profile_api.router)   # Owner profile picture: /api/profile (gated; the rename is /api/auth/username)
 app.include_router(about_api.router)   # Version and release notes: /api/about
+app.include_router(update_api.router)   # Update notice: /api/update (the server asks GitHub at most once a day; Settings > Updates switches it off)
 app.include_router(samples_api.router)   # First-run sample content: /api/samples (added only by a button press)
 app.include_router(settings_api.router)   # Settings page: /api/settings
 app.include_router(collections_api.router)   # Collections: /api/collections

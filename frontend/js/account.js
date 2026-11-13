@@ -55,6 +55,7 @@ fetch("/api/about").then((r) => r.json()).then((a) => {
   const v = $("#account-version");
   v.textContent = `${a.name} v${a.version}`;
   v.hidden = false;
+  dispatchEvent(new Event("flowlystack-version"));   // updatenotice.js adds its "update available" badge to this line
 }).catch(() => {});
 
 // Every way to sign out (the menu, the top bar, Settings > Account, ⌘K) asks first: it ends this browser's session.

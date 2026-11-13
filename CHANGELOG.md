@@ -2,6 +2,13 @@
 
 What changed in each release, newest first. The app shows this page under **What's new**.
 
+## [Unreleased]
+### New
+- **Update notice.** When you are online and a newer FlowlyStack exists, you see a notice after you log in, with the update commands you can copy, and "available" on the version line of the account menu. The server asks GitHub for the latest release at most once a day; the request carries nothing about you. It is on by default: switch it off in **Settings > Updates** (or with `FLOWLYSTACK_UPDATE_CHECK=off`) and no request is ever made. The app never updates itself.
+
+### Heads up
+- **FlowlyStack now asks for Python 3.12.** Docker and `run.sh` already used it, so nothing changes for them. Only a hand-made install on an older Python is affected.
+
 ## [0.1.2] - 2026-11-12
 A small improvement release. Update with the steps in [Updating and backup](docs/updating-and-backup.md).
 

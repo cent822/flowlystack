@@ -14,6 +14,8 @@ The login and settings volume also holds `secrets.json`, which stores any key yo
 
 ## Update
 
+When a newer version exists and you are online, FlowlyStack tells you after you log in: a notice with the commands below, and "available" on the version line of the account menu. It only tells; nothing updates until you run the commands. You can turn the notice off in **Settings > Updates** (or `FLOWLYSTACK_UPDATE_CHECK=off`).
+
 Your prompts, settings and login stay. New versions can read the data of old ones, and the caches are rebuilt by themselves if needed. After an update, open **Settings > About > What's new** to see what changed.
 
 ### Docker (installer, agent or by hand)

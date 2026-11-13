@@ -43,7 +43,7 @@ FlowlyStack never writes to a model on its own initiative. There are four situat
 
 - **While running:** the app listens on your own computer only (`127.0.0.1`). In Docker, the port is published to your own computer only. It's reachable from other devices only if **you** put a web proxy in front of it ([Login and remote access](remote-access.md)). Everything is behind your login.
 - **At install and update time:** the installer downloads one script and the compose file from GitHub, and Docker downloads the app image (from GitHub's container registry) and the search service image. Those downloads don't carry anything about you or your data.
-- **There is no update check in this version.** The app does not phone home to see whether a newer version exists. You update when you choose to ([Updating and backup](updating-and-backup.md)).
+- **Update notice (on by default).** When the app is online, the server asks GitHub for the latest FlowlyStack release, at most once a day, and tells you after login if a newer one exists. It is a plain request for the public release page: it carries no cookie, no account, no prompt, document or setting, and not even your version number. GitHub sees your computer's address, as with any website. You can turn it off in **Settings > Updates** or with `FLOWLYSTACK_UPDATE_CHECK=off` (then no request is ever made). Offline, it stays silent. The app never updates itself: you run the update commands ([Updating and backup](updating-and-backup.md)).
 
 ## Sample content
 
