@@ -2,7 +2,9 @@
 
 What changed in each release, newest first. The app shows this page under **What's new**.
 
-## [Unreleased]
+## [0.1.3] - 2026-11-13
+An update with a new notice for future updates. Update with the steps in [Updating and backup](docs/updating-and-backup.md).
+
 ### New
 - **Update notice.** When you are online and a newer FlowlyStack exists, you see a notice after you log in, with the update commands you can copy, and "available" on the version line of the account menu. The server asks GitHub for the latest release at most once a day; the request carries nothing about you. It is on by default: switch it off in **Settings > Updates** (or with `FLOWLYSTACK_UPDATE_CHECK=off`) and no request is ever made. The app never updates itself.
 
