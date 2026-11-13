@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Runs every check that needs no server: what CI runs on each push, and what you can run before one.
-    .venv/bin/python scripts/run_ci_checks.py        (Python 3.10+ with the project's dependencies; CI uses 3.12)
+    .venv/bin/python scripts/run_ci_checks.py        (Python 3.12 with the project's dependencies, as CI uses)
     .venv/bin/python scripts/run_ci_checks.py -k mcp  (only the checks whose name contains 'mcp')
 
 Each check runs in its own process with a throwaway HOME, settings folder, prompts folder and usage cache, so nothing real is

@@ -2,7 +2,7 @@
 name = "flowlystack"
 version = "0.1.2"
 description = "A private workspace on your own computer to keep, connect and plan your AI prompts."
-requires-python = ">=3.10"
+requires-python = ">=3.12"
 # The single dependency list: run.sh installs from it on every start and a Dockerfile will do the same.
 # Exact versions on purpose (like the Meilisearch pin): upgrade deliberately and re-run the checks.
 dependencies = [
