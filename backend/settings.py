@@ -160,7 +160,7 @@ LEAVES = {
     "knowledge.gallery_ignore_words": ("", _text(2000), None),   # words the Gallery leaves out of its word charts (comma or space separated)
     # In Docker (FLOWLYSTACK_IN_DOCKER=1) 127.0.0.1 is the container itself, so the default points at the computer that runs Docker; still editable in Settings.
     "connections.ollama.url": ("http://host.docker.internal:11434" if os.environ.get("FLOWLYSTACK_IN_DOCKER") else "http://127.0.0.1:11434", _url, "FLOWLYSTACK_OLLAMA_URL"),
-    "updates.check": (True, _flag, "FLOWLYSTACK_UPDATE_CHECK"),   # on by default: the server asks GitHub for the latest release at most once a day (backend/updatecheck.py); off = no request at all
+    "updates.check": (True, _flag, "FLOWLYSTACK_UPDATE_CHECK"),   # on by default: the server asks GitHub for the latest release at most once every 6 hours (backend/updatecheck.py); off = no request at all
     "updates.whatsnew": (True, _bool, None),   # on by default: after an update the first login shows the release notes once (backend/whatsnew.py); local only, nothing is sent
     "mcp.share_hidden": (False, _bool, None),   # agents may read entities from runs the user hid on the Lattice page (off: hidden stays hidden)
     "mcp.enabled": (False, _bool, None),   # off until the user switches it on (Settings > MCP); /mcp answers 404 while off

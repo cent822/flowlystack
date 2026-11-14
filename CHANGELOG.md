@@ -2,6 +2,12 @@
 
 What changed in each release, newest first. The app shows this page under **What's new**.
 
+## [0.1.6] - 2026-11-14
+A small improvement release. Update with the steps in [Updating and backup](docs/updating-and-backup.md).
+
+### Improved
+- **The update notice looks more often.** FlowlyStack now asks GitHub for the latest release at most once every 6 hours instead of once a day, so a new release reaches you sooner. The request is still a plain one that carries nothing about you, and you can still switch it off in **Settings > Updates**.
+
 ## [0.1.5] - 2026-11-14
 A small improvement release. Update with the steps in [Updating and backup](docs/updating-and-backup.md).
 

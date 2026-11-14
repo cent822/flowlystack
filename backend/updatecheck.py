@@ -1,6 +1,6 @@
 """The update notice: is there a newer FlowlyStack release? (stdlib-only)
 
-The SERVER asks GitHub (never the browser), at most once a day, and keeps the answer in `<settings dir>/update.json`:
+The SERVER asks GitHub (never the browser), at most once every 6 hours, and keeps the answer in `<settings dir>/update.json`:
 `{checked_at, failed_at, latest, url, dismissed}`. The request is a plain GET: no cookie, no id, nothing about the user or the
 data, and a generic User-Agent without the version. Offline or any error: the old answer stays and nothing is shown; the next try
 waits an hour. Switch off with Settings > Updates or FLOWLYSTACK_UPDATE_CHECK=off: then no request is ever made.
@@ -25,7 +25,7 @@ from .config import SETTINGS_DIR
 
 URL = "https://api.github.com/repos/cent822/flowlystack/releases/latest"
 PAGE = "https://github.com/cent822/flowlystack/releases/latest"
-TTL = 24 * 3600        # ask GitHub at most once a day
+TTL = 6 * 3600         # ask GitHub at most once every 6 hours
 RETRY = 3600           # after a failure, wait an hour
 TIMEOUT = 4
 WAIT = 2               # a stale answer: the page waits at most this long for GitHub, then goes on with what it has

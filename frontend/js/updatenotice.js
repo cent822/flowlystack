@@ -1,5 +1,5 @@
 // The update notice: when the server knows a newer release exists (GET /api/update, answered from its stored result; the server asks GitHub
-// at most once a day and Settings > Updates switches it off), show a toast once per new version and a quiet badge on the version line of the
+// at most once every 6 hours and Settings > Updates switches it off), show a toast once per new version and a quiet badge on the version line of the
 // account menu. It only tells: updating is the user's own two commands. Plain DOM; nothing here talks to the internet itself.
 import { toast } from "./toast.js";
 import { COPY_ICONS, copy } from "./editor.js";

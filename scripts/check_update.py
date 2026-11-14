@@ -89,7 +89,17 @@ assert not {"cookie", "authorization", "referer", "x-forwarded-for"} & set(low),
 assert CUR not in json.dumps(hdr) and path == "/latest", (path, hdr)
 step("the request is a plain GET: generic User-Agent, no cookie, no id, no version")
 
-# --- a day later it asks again; a failure waits an hour; offline is silent ---
+# --- the answer is kept for 6 hours (the docs say so): 5 h old = no request, 6 h old = asks again ---
+assert uc.TTL == 6 * 3600, uc.TTL
+d = json.loads(uc._file().read_text())
+d["checked_at"] = time.time() - 5 * 3600
+uc._file().write_text(json.dumps(d))
+n = len(SEEN)
+uc.status(background=False)
+assert len(SEEN) == n, "an answer 5 hours old is still fresh: no request"
+step("a 5-hour-old answer is fresh (no request); the cache time is 6 hours")
+
+# --- 6 hours later it asks again; a failure waits an hour; offline is silent ---
 d = json.loads(uc._file().read_text())
 d["checked_at"] = time.time() - uc.TTL - 5
 uc._file().write_text(json.dumps(d))
@@ -104,7 +114,7 @@ st = uc.status(background=False)
 assert len(SEEN) == before + 1 and st["latest"] == "99.1.0" and st["newer"] is True, st   # the old answer stays, nothing is shown as an error
 uc.status(background=False)
 assert len(SEEN) == before + 1, "after a failure the next try waits (an hour), not every call"
-step("stale after a day: asks again; a failure keeps the old answer and backs off")
+step("stale after 6 hours: asks again; a failure keeps the old answer and backs off")
 
 # --- not offered: draft, pre-release, a tag that is not x.y.z, a redirect, a broken answer ---
 for label, kw in (("draft", {"draft": True}), ("pre-release", {"prerelease": True}), ("odd tag", {"tag_name": "nightly"}), ("rc tag", {"tag_name": "v1.0.0-rc1"})):
