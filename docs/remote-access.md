@@ -7,7 +7,7 @@ This page is for people who run FlowlyStack on a computer or server and open it 
 ## How the login works
 
 - One owner account, stored in `data/auth.json` (owner-only permissions, never committed): the username and a scrypt hash of the password. A password is never stored or logged.
-- A successful log-in sets a session cookie (named `flowlystack_session_` plus a short code that is different for every install, so two copies of FlowlyStack on one computer never log each other out: HttpOnly, SameSite=Lax, `Secure` over HTTPS) that lasts 30 days from your last visit. Only a hash of its token is stored.
+- A successful log-in sets a session cookie (named `flowlystack_session_` plus a short code that is different for every install, so two copies of FlowlyStack on one computer never log each other out: HttpOnly, SameSite=Lax, `Secure` over HTTPS). It is a session cookie: the browser drops it when it quits, and the server ends a session left unused for 30 days. On top of that, **every browser tab signs in for itself**: a tab you open later asks for the password again, even if another tab is still signed in; reloading a tab keeps it signed in. Only a hash of the cookie's token is stored.
 - Five wrong passwords in a minute lock that address out for a minute.
 - A write request whose `Origin` names another site is refused (protection against cross-site requests).
 - **Settings > Account** has a profile picture, Name (the name you log in with; changing it asks for your password and keeps you signed in), Change password (it signs every other browser out) and Sign out; the account menu (bottom-left) has Sign out too. The picture is a file next to `auth.json` in `data/` and never leaves the computer.
@@ -16,7 +16,7 @@ This page is for people who run FlowlyStack on a computer or server and open it 
 
 ## Two-step login (authenticator app)
 
-Turn it on in **Settings > Account > Two-step login > Set up**: type your password, scan the QR code with an authenticator app (Google Authenticator, Microsoft Authenticator, 1Password, Authy and others), type the first 6-digit code, and save the **8 backup codes** it then shows once (Copy or Download). From then on every new log-in asks for the 6-digit code after the password; **Use a backup code instead** takes one of the saved codes, each of which works once. The cookie lasts 30 days, so the code is asked at a new log-in, not on every visit.
+Turn it on in **Settings > Account > Two-step login > Set up**: type your password, scan the QR code with an authenticator app (Google Authenticator, Microsoft Authenticator, 1Password, Authy and others), type the first 6-digit code, and save the **8 backup codes** it then shows once (Copy or Download). From then on every new log-in asks for the 6-digit code after the password; **Use a backup code instead** takes one of the saved codes, each of which works once. The code is asked at each log-in, which now happens in every new tab or browser session; a reload in the same tab does not ask again.
 
 - **New backup codes** and **Turn off** (same row) ask for your password and a current code (a backup code works too), and sign every other browser out. So does turning it on.
 - A code works once, and a phone clock one step (30 seconds) off is tolerated; more than that fails with "Check that the clock on your phone is right". Five wrong codes lock that address for a minute, like wrong passwords.

@@ -96,7 +96,8 @@ def _need_enabled():
 
 
 def _set_cookie(request: Request, response: Response, token: str) -> None:
-    response.set_cookie(auth.cookie_name(), token, max_age=auth.SESSION_DAYS * 86400, httponly=True, samesite="lax",
+    response.set_cookie(auth.cookie_name(), token, httponly=True,   # no max_age: a session cookie, gone when the browser quits (the server still ends an idle session after SESSION_DAYS)
+                        samesite="lax",
                         secure=is_https(request), path="/")
 
 

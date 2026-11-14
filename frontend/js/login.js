@@ -40,6 +40,14 @@ function showErr(msg) {
   form.classList.toggle("has-err", !!msg);
 }
 
+function markTab() {   // this tab has signed in: authguard.js lets it into the app (a new tab has no mark and asks again)
+  try { sessionStorage.setItem("flowlystack-tab", "1"); } catch (e) {}
+}
+
+function tabMarked() {
+  try { return sessionStorage.getItem("flowlystack-tab") === "1"; } catch (e) { return true; }
+}
+
 function next() {   // only a path on this site: never "//host" or a backslash trick
   const n = new URLSearchParams(location.search).get("next") || "/";
   return n.startsWith("/") && !n.startsWith("//") && !n.startsWith("/\\") && !n.startsWith("/login") ? n : "/";
@@ -87,7 +95,7 @@ form.addEventListener("submit", async (e) => {
   try {
     const r = await api(mode === "signup" ? "/api/auth/signup" : "/api/auth/login", { username: user, password: pw });
     if (r.ok && r.data.twostep) { ticket = r.data.ticket; $("#p").value = ""; go.disabled = false; return setMode("code"); }   // the password was right; the code is next
-    if (r.ok) return location.replace(next());
+    if (r.ok) { markTab(); return location.replace(next()); }
     showErr(r.status === 429 ? `Too many attempts. Try again in ${r.retry || 60} seconds.` : r.detail || "Something went wrong. Try again.");
   } catch (x) {
     showErr("Could not reach the server.");
@@ -102,7 +110,7 @@ async function submitCode() {
   go.disabled = true;
   try {
     const r = await api("/api/auth/login/code", { ticket, code });
-    if (r.ok) return location.replace(next());
+    if (r.ok) { markTab(); return location.replace(next()); }
     if (r.status === 401 && /expired/i.test(r.detail)) { ticket = ""; setMode("login"); showErr(r.detail); }   // too many tries or too slow: password again
     else { showErr(r.status === 429 ? `Too many attempts. Try again in ${r.retry || 60} seconds.` : r.detail || "Something went wrong. Try again."); $("#c").select(); }
   } catch (x) {
@@ -118,6 +126,6 @@ $("#forgot").addEventListener("click", () => {
 });
 
 fetch("/api/auth/state").then((r) => r.json()).then((s) => {
-  if (!s.enabled || s.signed_in) return location.replace(next());   // login is off, or already signed in
+  if (!s.enabled || (s.signed_in && tabMarked())) return location.replace(next());   // login is off, or this tab already signed in (a new tab asks again even if the cookie is still valid)
   setMode(s.needs_setup ? "signup" : "login");
 }).catch(() => { setMode("login"); showErr("Could not reach the server."); });

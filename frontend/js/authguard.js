@@ -9,7 +9,20 @@
     location.replace("/login" + (here === "/" ? "" : "?next=" + encodeURIComponent(here)));
   };
 
+  // Each tab signs in for itself: the cookie is shared by all tabs, so a tab without its own mark (a tab opened later, or after the
+  // browser was closed) asks for the password again. The page stays hidden until the server has answered, so nothing flashes.
+  let marked = true;
+  try { marked = sessionStorage.getItem("flowlystack-tab") === "1"; } catch (e) {}
   const realFetch = window.fetch.bind(window);
+  if (!marked) {
+    document.documentElement.style.visibility = "hidden";
+    realFetch("/api/auth/state").then((r) => r.json()).then((s) => {
+      if (s.enabled) return toLogin();
+      try { sessionStorage.setItem("flowlystack-tab", "1"); } catch (e) {}   // login is off: nothing to ask
+      document.documentElement.style.visibility = "";
+    }).catch(() => { document.documentElement.style.visibility = ""; });
+  }
+
   window.fetch = async (...args) => {
     const res = await realFetch(...args);
     if (res.status === 401) {

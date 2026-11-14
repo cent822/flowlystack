@@ -2,6 +2,12 @@
 
 What changed in each release, newest first. The app shows this page under **What's new**.
 
+## [0.1.4] - 2026-11-14
+A small security improvement. Update with the steps in [Updating and backup](docs/updating-and-backup.md).
+
+### Changed
+- **Login no longer outlives the tab.** Each browser tab now signs in for itself: closing the tab (or the browser) and opening the app again asks for your username and password. A reload keeps the tab signed in. The login cookie is now a session cookie, so quitting the browser signs you out too.
+
 ## [0.1.3] - 2026-11-13
 An update with a new notice for future updates. Update with the steps in [Updating and backup](docs/updating-and-backup.md).
 

@@ -94,7 +94,7 @@ cookie, raw = set_cookie(h)
 assert d == {"ok": True, "username": "alice"} and re.match(r"flowlystack_session_[0-9a-f]{8}=", cookie) and len(cookie) > 40, raw
 CNAME = cookie.split("=")[0]   # this install's cookie name
 low = raw.lower()
-assert "httponly" in low and "samesite=lax" in low and "path=/" in low and "secure" not in low and "max-age=2592000" in low, raw
+assert "httponly" in low and "samesite=lax" in low and "path=/" in low and "secure" not in low and "max-age" not in low and "expires" not in low, raw   # a session cookie: it ends with the browser
 call("POST", "/api/auth/signup", {"username": "other", "password": "another pass1"}, expect=403, cookie=cookie)
 call("POST", "/api/auth/signup", {"username": "other", "password": "another pass1"}, expect=403)
 step("sign-up creates the owner and sets an HttpOnly, SameSite=Lax cookie (no Secure over plain http); a second sign-up is 403")
