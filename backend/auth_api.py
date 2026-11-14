@@ -17,7 +17,7 @@ from urllib.parse import quote, urlparse
 from fastapi import APIRouter, Body, HTTPException, Request
 from fastapi.responses import JSONResponse, RedirectResponse, Response
 
-from . import auth, profilestore
+from . import auth, profilestore, whatsnew
 
 router = APIRouter(prefix="/api/auth")
 PUBLIC_PREFIXES = ("/css/", "/fonts/")                      # what the login page is drawn with
@@ -122,6 +122,7 @@ def signup(request: Request, response: Response, body: dict = Body(...)):
         token = auth.signup(body.get("username"), body.get("password"))
     except auth.AuthError as e:
         _fail(e)
+    whatsnew.mark()         # a brand-new install does not get release notes on day one
     profilestore.remove()   # sign-up only works when there was no owner: a new owner never inherits an old picture ("delete data/auth.json to start over")
     _set_cookie(request, response, token)
     return {"ok": True, "username": auth.session_user(token)}

@@ -28,6 +28,7 @@ PAGE = "https://github.com/cent822/flowlystack/releases/latest"
 TTL = 24 * 3600        # ask GitHub at most once a day
 RETRY = 3600           # after a failure, wait an hour
 TIMEOUT = 4
+WAIT = 2               # a stale answer: the page waits at most this long for GitHub, then goes on with what it has
 _LOCK = threading.Lock()
 _busy = False
 _VER = re.compile(r"^v?(\d+)\.(\d+)\.(\d+)$")
@@ -117,8 +118,9 @@ def _stale(d: dict, now: float) -> bool:
     return now - (d.get("checked_at") or 0) >= TTL
 
 
-def status(background: bool = True) -> dict:
-    """What the page needs, from the stored answer at once; a stale answer starts one refresh in the background."""
+def status(background: bool = True, wait: float = WAIT) -> dict:
+    """What the page needs. A fresh stored answer is returned at once. A stale one starts one refresh in the background and waits up to
+    `wait` seconds for it, so a new release shows on the first login after the answer went stale; a slow GitHub never holds the page longer."""
     global _busy
     current = appinfo.version()
     docker = bool(os.environ.get("FLOWLYSTACK_IN_DOCKER"))
@@ -128,7 +130,10 @@ def status(background: bool = True) -> dict:
     if _stale(d, time.time()) and not _busy:
         _busy = True
         if background:
-            threading.Thread(target=refresh, daemon=True).start()
+            t = threading.Thread(target=refresh, daemon=True)
+            t.start()
+            t.join(wait)   # returns early when GitHub answers; the thread carries on (and stores its answer) if it is slower
+            d = _read()
         else:
             refresh()
             d = _read()

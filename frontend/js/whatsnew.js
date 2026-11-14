@@ -4,8 +4,10 @@ import { api } from "./api.js";
 import { registerCommands, ICONS } from "./palette.js";
 
 const $ = (s) => document.querySelector(s);
-const esc = (t) => String(t ?? "").replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]);
-const inline = (t) => esc(t).replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>").replace(/`([^`]+)`/g, "<code>$1</code>");   // only bold and code, on escaped text
+export const esc = (t) => String(t ?? "").replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]);
+// Bold, code and links, on escaped text. A https link opens in a new tab; a link to a file inside the repository (docs/...) is just its words, because it goes nowhere in the app.
+export const inline = (t) => esc(t).replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>").replace(/`([^`]+)`/g, "<code>$1</code>")
+  .replace(/\[([^\]]+)\]\((https:\/\/[^)\s]+)\)/g, '<a href="$2" target="_blank" rel="noopener noreferrer">$1</a>').replace(/\[([^\]]+)\]\([^)]*\)/g, "$1");
 
 registerCommands(() => [
   { label: "What's new", where: "Account", keywords: "release notes changelog version updates news", icon: ICONS.setup, run: () => { location.hash = "#/whatsnew"; } },

@@ -135,3 +135,34 @@ export function choiceDialog({ title, intro = "", options, current, closeLabel =
     focusAt(Math.max(0, options.findIndex((o) => o.value === current)));
   });
 }
+
+/**
+ * A read-only dialog for a longer text (the What's new dialog after an update). `html` is trusted, already escaped markup. Close, Esc or a click outside
+ * resolves "close"; `moreLabel` adds a second button that resolves "more". The body scrolls and the buttons stay in view.
+ */
+export function infoDialog({ title, html, closeLabel = "Close", moreLabel = "" }) {
+  return new Promise((resolve) => {
+    const dlg = document.createElement("dialog");
+    dlg.className = "cb-dialog cb-info-dlg";
+    dlg.setAttribute("aria-labelledby", "cb-info-title");
+    dlg.innerHTML = `
+      <div class="cb-dialog-box">
+        <h2 id="cb-info-title">${esc(title)}</h2>
+        <div class="cb-info-body" tabindex="0">${html}</div>
+        <div class="cb-dialog-actions">
+          ${moreLabel ? `<button type="button" class="btn btn-sm btn-glow btn-glow-md" data-act="more">${esc(moreLabel)}</button>` : ""}<span class="cb-spacer"></span>
+          <button type="button" class="btn btn-sm btn-glow btn-glow-md" data-act="close" autofocus>${esc(closeLabel)}</button>
+        </div>
+      </div>`;
+    let result = "close";
+    dlg.addEventListener("click", (e) => {
+      const act = e.target.closest("[data-act]")?.dataset.act;
+      if (act === "more") result = "more";
+      if (act || e.target === dlg) dlg.close();
+    });
+    dlg.addEventListener("close", () => { dlg.remove(); resolve(result); });
+    loopTab(dlg);
+    document.body.append(dlg);
+    dlg.showModal();
+  });
+}

@@ -1728,3 +1728,15 @@ a.pr-menuitem { text-decoration: none; }
 .pf-name { font: 500 var(--fs-lead) var(--font-display); color: var(--text-primary); }
 .pf-prevwrap { display: grid; place-items: center; padding: var(--spacing-md) 0; }
 .pf-prev { width: 160px; height: 160px; border-radius: var(--radius-full); object-fit: cover; box-shadow: 0 0 0 1px var(--hairline-strong), var(--shadow-sm); }
+
+/* the What's new dialog after an update (infoDialog in dialog.js): follows the window, the notes scroll and the buttons stay in view */
+.cb-dialog.cb-info-dlg { width: min(680px, calc(100vw - 32px)); max-height: calc(100dvh - 24px); }
+.cb-dialog.cb-info-dlg[open] { display: flex; }
+.cb-info-dlg .cb-dialog-box { display: flex; flex-direction: column; min-height: 0; width: 100%; box-sizing: border-box; }
+.cb-info-body { overflow: auto; min-height: 0; margin: var(--spacing-md) calc(-1 * var(--spacing-sm)) var(--spacing-lg); padding: 0 var(--spacing-sm); }
+.cb-info-body:focus-visible { outline: none; }
+.wn-dlg-rel + .wn-dlg-rel { margin-top: var(--spacing-xl); padding-top: var(--spacing-lg); border-top: 1px solid var(--hairline-strong); }
+.wn-dlg-ver { margin: 0 0 var(--spacing-sm); font: 400 var(--fs-body) var(--font-code); color: var(--text-primary); }
+.wn-dlg-ver .muted { margin-left: var(--spacing-sm); font-size: var(--fs-label); }
+.cb-info-body .wn-h:first-of-type { margin-top: var(--spacing-md); }
+.cb-info-body .wn-intro { margin: 0 0 var(--spacing-md); color: var(--text-primary); }

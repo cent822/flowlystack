@@ -1,5 +1,5 @@
 """Update notice routes, mounted at /api/update (backend/updatecheck.py). Gated by the login like every other /api route.
-GET answers from the stored result at once and never waits for GitHub; POST /dismiss closes the toast for one version."""
+GET answers from the stored result at once; only when that result is stale does it wait up to 2 seconds for GitHub; POST /dismiss closes the toast for one version."""
 from __future__ import annotations
 
 from fastapi import APIRouter

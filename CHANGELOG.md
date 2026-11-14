@@ -2,6 +2,16 @@
 
 What changed in each release, newest first. The app shows this page under **What's new**.
 
+## [0.1.5] - 2026-11-14
+A small improvement release. Update with the steps in [Updating and backup](docs/updating-and-backup.md).
+
+### New
+- **What's new window after an update.** The first time you log in after FlowlyStack was updated, a window shows the release notes of that version (the last three if you skipped some), with **Close**, `Esc` or a click outside to dismiss it and **All releases** to open the full list. It appears once per version for the whole install, works offline and sends nothing. A fresh install does not show it. Switch it off in **Settings > Updates**.
+
+### Improved
+- **Links in the release notes.** Web links are now clickable; a link to a document inside the project is shown as plain words.
+- **The update notice shows sooner.** When the stored answer is a day old, the first page load now waits up to 2 seconds for GitHub's reply, so the notice appears at that login instead of the next one. A slow or offline GitHub never holds the page longer than that.
+
 ## [0.1.4] - 2026-11-14
 A small security improvement. Update with the steps in [Updating and backup](docs/updating-and-backup.md).
 

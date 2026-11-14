@@ -161,15 +161,24 @@ settings.update("updates", {"check": True})
 assert settings.resolve("updates.check") == (True, "settings") and settings.LEAVES["updates.check"][0] is True   # the default is ON
 step("switch off = zero requests; the environment beats Settings; the default is on")
 
-# --- the page never waits for GitHub ---
+# --- a stale answer: the page waits a little for GitHub, never long ---
 reset()
-REPLY["delay"] = 1.5
 t = time.time()
-st = uc.status()   # background: answers from the (empty) store at once
-assert time.time() - t < 0.5 and st["newer"] is False and st["latest"] == "", st
+st = uc.status()   # empty store = stale: asks GitHub and waits (it answers at once here)
+assert time.time() - t < uc.WAIT and st["newer"] is True and st["latest"] == "99.0.0", st   # the FIRST call already has the new release
+assert uc.status()["newer"] is True and len(SEEN) == 1   # and the next call comes from the store
+step("a stale answer: the first call already has the new release (it waited for the fast answer)")
+reset()
+REPLY["delay"] = uc.WAIT + 1.5
+t = time.time()
+st = uc.status()   # GitHub is slower than the wait: the page goes on without it
+assert uc.WAIT - 0.2 < time.time() - t < uc.WAIT + 0.8 and st["newer"] is False and st["latest"] == "", (time.time() - t, st)
 time.sleep(2.2)
-assert uc.status()["newer"] is True   # the refresh finished in the background
-step("a slow GitHub never slows the page: the answer comes from the store, the refresh runs in the background")
+assert uc.status()["newer"] is True   # the refresh finished in the background and stored its answer
+step("a slow GitHub holds the page for the wait only; its answer is stored when it arrives")
+reset()
+assert uc.status(wait=0)["newer"] is False   # wait=0: the old behaviour (answer from the store at once)
+step("wait=0 never waits")
 
 # --- Docker is reported (the toast shows its two commands) ---
 os.environ["FLOWLYSTACK_IN_DOCKER"] = "1"
