@@ -2,6 +2,12 @@
 
 What changed in each release, newest first. The app shows this page under **What's new**.
 
+## [0.1.7] - 2026-11-15
+A small fix release. Update with the steps in [Updating and backup](docs/updating-and-backup.md).
+
+### Fixed
+- **Linkshell: file buttons no longer hidden.** In a Reference block, a long file name could make the side panel too wide, so the **Open in a new tab** and **Remove** buttons sat behind the panel's right edge. The file list now stays inside the panel and a long name is shortened with "...".
+
 ## [0.1.6] - 2026-11-14
 A small improvement release. Update with the steps in [Updating and backup](docs/updating-and-backup.md).
 
