@@ -2,6 +2,14 @@
 
 What changed in each release, newest first. The app shows this page under **What's new**.
 
+## [0.1.8] - 2026-11-19
+A small improvement release. Update with the steps in [Updating and backup](docs/updating-and-backup.md).
+
+### Improved
+- **Tidier Settings pages.** The buttons in **Settings** now line up on the right edge of each row: Account (Choose picture, Change name, Change password, Set up, Sign out), General (Add or Remove sample content), Connections (Check connection, Add connection) and MCP (New token). The status text that used to sit above a button ("Not added", "Off", "Added...") moved next to or under the row text, so the button stays in one place.
+- **MCP switch stays put.** The status line now sits to the left of the switch, so the switch no longer moves down when MCP is turned on.
+- **Copy inside the setup box.** In **Settings > MCP**, the Copy button for the client setup now sits inside the command box, centred at its right edge like the Address box.
+
 ## [0.1.7] - 2026-11-15
 A small fix release. Update with the steps in [Updating and backup](docs/updating-and-backup.md).
 

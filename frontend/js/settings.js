@@ -203,29 +203,29 @@ function control(r) {
   if (r.kind === "aboutversion") return `<div class="set-inline"><b class="set-version">${esc(S.about?.version ? "v" + S.about.version : "unknown")}</b><a class="btn btn-sm btn-glow" href="#/whatsnew">What's new</a></div>`;
   if (r.kind === "profilepic" || r.kind === "profilename") {
     if (!S.auth?.enabled || !S.auth.signed_in) return `<p class="muted small">Login is turned off on this server (FLOWLYSTACK_AUTH=off), so there is no owner profile.</p>`;
-    if (r.kind === "profilename") return `<div class="set-inline"><b class="pf-name">${esc(S.auth.username)}</b><button type="button" class="btn btn-sm btn-glow" data-name-change>Change name</button></div>`;
+    if (r.kind === "profilename") return `<div class="set-inline set-inline-end"><b class="pf-name">${esc(S.auth.username)}</b><button type="button" class="btn btn-sm btn-glow" data-name-change>Change name</button></div>`;
     const v = S.auth.avatar;
-    return `<div class="set-inline"><span class="avatar av-lg${v ? " has-img" : ""}" aria-hidden="true">${v ? `<img src="/api/profile/avatar?v=${v}" alt="" draggable="false">` : `<span class="av-letter">${esc((S.auth.username.trim()[0] || "?").toUpperCase())}</span>`}</span><button type="button" class="btn btn-sm btn-glow" data-pf-choose>${v ? "Change picture" : "Choose picture"}</button>${v ? `<button type="button" class="btn btn-sm btn-glow btn-danger" data-pf-remove>Remove</button>` : ""}</div>`;
+    return `<div class="set-inline set-inline-end"><span class="avatar av-lg${v ? " has-img" : ""}" aria-hidden="true">${v ? `<img src="/api/profile/avatar?v=${v}" alt="" draggable="false">` : `<span class="av-letter">${esc((S.auth.username.trim()[0] || "?").toUpperCase())}</span>`}</span><button type="button" class="btn btn-sm btn-glow" data-pf-choose>${v ? "Change picture" : "Choose picture"}</button>${v ? `<button type="button" class="btn btn-sm btn-glow btn-danger" data-pf-remove>Remove</button>` : ""}</div>`;
   }
   if (r.kind === "twostep") {
     if (!S.auth?.enabled || !S.auth.signed_in) return `<p class="muted small">Login is turned off on this server (FLOWLYSTACK_AUTH=off).</p>`;
     if (!S.twostep) return "";
     return S.twostep.enabled
-      ? `<p class="small"><b>On.</b> <span class="muted">${S.twostep.backup_left} backup code${S.twostep.backup_left === 1 ? "" : "s"} left.</span></p><div class="set-inline"><button type="button" class="btn btn-sm btn-glow" data-ts-backup>New backup codes</button><button type="button" class="btn btn-sm btn-glow" data-ts-off>Turn off</button></div>`
-      : `<p class="small muted">Off.</p><div class="set-inline"><button type="button" class="btn btn-sm btn-glow" data-ts-setup>Set up</button></div>`;
+      ? `<p class="small set-end"><b>On.</b> <span class="muted">${S.twostep.backup_left} backup code${S.twostep.backup_left === 1 ? "" : "s"} left.</span></p><div class="set-inline set-inline-end"><button type="button" class="btn btn-sm btn-glow" data-ts-backup>New backup codes</button><button type="button" class="btn btn-sm btn-glow" data-ts-off>Turn off</button></div>`
+      : `<div class="set-inline set-inline-end"><button type="button" class="btn btn-sm btn-glow" data-ts-setup>Set up</button></div>`;
   }
   if (r.kind === "account" || r.kind === "signout") {
     if (!S.auth?.enabled || !S.auth.signed_in) return `<p class="muted small">Login is turned off on this server (FLOWLYSTACK_AUTH=off).</p>`;
-    return r.kind === "account" ? `<div class="set-inline"><button type="button" class="btn btn-sm btn-glow" data-pw-change>Change password</button></div>`
-                                : `<div class="set-inline"><button type="button" class="btn btn-sm btn-glow" data-signout>Sign out</button></div>`;
+    return r.kind === "account" ? `<div class="set-inline set-inline-end"><button type="button" class="btn btn-sm btn-glow" data-pw-change>Change password</button></div>`
+                                : `<div class="set-inline set-inline-end"><button type="button" class="btn btn-sm btn-glow" data-signout>Sign out</button></div>`;
   }
   if (r.kind === "mcpswitch") return `<div class="set-inline set-inline-end"><span class="small muted" id="set-mcp-state">${mcpState()}</span><button type="button" class="set-switch" role="switch" id="set-mcp-switch" data-mcp-switch aria-checked="${!!loaded().mcp?.enabled}" aria-label="${esc(r.label)}"></button></div>`;
   if (r.kind === "mcphidden") return `<div class="set-inline set-inline-end"><span class="small muted" id="set-mcphidden-state">${loaded().mcp?.share_hidden ? "Shared with agents" : "Kept from agents"}</span><button type="button" class="set-switch" role="switch" id="set-mcphidden-switch" data-mcp-hidden aria-checked="${!!loaded().mcp?.share_hidden}" aria-label="${esc(r.label)}"></button></div>`;
   if (r.kind === "mcpendpoint") return `<div class="ts-key"><code id="set-mcp-url">${esc(mcpUrl())}</code><button type="button" class="btn btn-sm btn-glow" data-mcp-copy-url>${COPY_ICONS}<span>Copy</span></button></div>`;
-  if (r.kind === "mcptokens") return `<div class="set-inline"><button type="button" class="btn btn-sm btn-glow" data-mcp-new>New token</button></div>`;
+  if (r.kind === "mcptokens") return `<div class="set-inline set-inline-end"><button type="button" class="btn btn-sm btn-glow" data-mcp-new>New token</button></div>`;
   if (r.kind === "mcpconnect") return `<div id="set-mcp-connect">${mcpConnect()}</div>`;
   if (r.kind === "mcpactivity") return `<div id="set-mcp-activity">${mcpActivity()}</div>`;
-  if (r.kind === "check") return `<div class="set-inline"><button type="button" class="btn btn-sm btn-glow" id="set-check">Check connection</button><span class="small" id="set-check-msg" role="status"></span></div>`;
+  if (r.kind === "check") return `<div class="set-inline set-inline-end"><span class="small" id="set-check-msg" role="status"></span><button type="button" class="btn btn-sm btn-glow" id="set-check">Check connection</button></div>`;
   if (r.kind === "runtimes") return `<div id="set-rt-ctl">${runtimesControl()}</div>`;
   if (r.kind === "embed") return `<div id="set-embed-ctl">${embedControl(r)}</div>`;
   if (r.kind === "model") return `<div id="set-model-ctl">${modelControl(r, null)}</div>`;
@@ -320,7 +320,7 @@ function renderPane(keepScroll) {
     <h2 class="set-title">${esc(sec.label)}</h2>
     <div class="set-rows">${rows.length ? rows.map((r, i) => `${r.group && r.group !== rows[i - 1]?.group ? `<h3 class="set-groupname">${esc(r.group)}</h3>` : ""}
       <div class="set-row${r.full ? " full" : ""}">
-        <div class="set-rowtext"><label class="set-label${r.tip ? " set-tip" : ""}" for="set-${esc(rowKey(r).replace(/\./g, "-"))}"${r.tip ? ` data-tip="${esc(r.tip)}" tabindex="0"` : ""}>${esc(r.label)}</label>${srcTag(r)}<p class="set-desc muted">${esc(r.desc)}</p></div>
+        <div class="set-rowtext"><label class="set-label${r.tip ? " set-tip" : ""}" for="set-${esc(rowKey(r).replace(/\./g, "-"))}"${r.tip ? ` data-tip="${esc(r.tip)}" tabindex="0"` : ""}>${esc(r.label)}</label>${srcTag(r)}<p class="set-desc muted">${esc(r.desc)}</p>${r.kind === "samples" ? `<p class="small set-desc muted" id="set-samples-status"></p>` : ""}</div>
         <div class="set-control">${control(r)}</div>${r.kind === "runtimes" ? `<div class="set-rtlist" id="set-rt-list">${runtimesList()}</div>` : r.kind === "mcptokens" ? `<div class="set-rtlist" id="set-mcp-list">${mcpList()}</div>` : ""}
       </div>`).join("") : `<p class="muted">Nothing in this section matches “${esc(S.q)}”.</p>`}</div>
     ${sec.save === false ? "" : `<div class="set-save"><span class="set-status muted" id="set-status" role="status"></span><button type="button" class="btn btn-sm btn-glow btn-glow-md" id="set-save" disabled>Save</button></div>`}`;
@@ -695,7 +695,7 @@ function rtStatus(r) {
   return p.reachable ? { ok: true, text: `Connected · ${p.models.length} model${p.models.length === 1 ? "" : "s"}` } : { ok: false, text: p.error || "Could not connect." };
 }
 function runtimesControl() {
-  return `<button type="button" class="btn btn-sm btn-glow" data-rt-add>Add connection</button>`;   // opens a dialog (a centred dialog never runs off the screen like a drop-down can)
+  return `<div class="set-inline set-inline-end"><button type="button" class="btn btn-sm btn-glow" data-rt-add>Add connection</button></div>`;   // opens a dialog (a centred dialog never runs off the screen like a drop-down can)
 }
 function runtimesList() {
   const list = S.data.runtimes || [];
@@ -844,8 +844,8 @@ function mcpConnect() {
     ${plain ? `<p class="small set-bad set-note">This address is not encrypted. Before a token crosses a network, open FlowlyStack through your HTTPS proxy and copy the setup from there.</p>` : ""}
     ${!mcpOn() ? `<p class="small set-bad set-note">MCP is switched off above, so a client cannot connect yet.</p>` : ""}
     ${S.mcp.fresh ? `<p class="small set-ok set-note">This text contains the token “${esc(S.mcp.fresh.name)}” you just made. It is forgotten when you leave this page.</p>` : ""}
-    <div class="mcp-snipbar"><button type="button" class="btn btn-sm btn-glow" data-mcp-copy-snip>${COPY_ICONS}<span>Copy</span></button></div>
-    <pre class="mcp-snip" tabindex="0"><code>${esc(snip)}</code></pre>`;
+    <div class="mcp-snipwrap"><button type="button" class="btn btn-sm btn-glow" data-mcp-copy-snip>${COPY_ICONS}<span>Copy</span></button>
+    <pre class="mcp-snip" tabindex="0"><code>${esc(snip)}</code></pre></div>`;
 }
 
 async function mcpToggle() {

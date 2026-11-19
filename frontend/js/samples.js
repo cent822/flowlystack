@@ -95,11 +95,11 @@ function drawRow(el) {
   if (!S) { el.innerHTML = `<p class="muted small">Could not read the sample content status.</p>`; return; }
   const p = S.present;
   const here = hasSamples();
+  const st = document.getElementById("set-samples-status");   // the status sits under the row text, so the button stays on the right edge
+  if (st) st.textContent = here ? `Added: ${list({ ...p, documents: S.will_add.documents })}${S.kept ? `; ${plural(S.kept, "item")} you changed will be kept` : ""}.` : "";
   el.innerHTML = here
-    ? `<p class="small"><b>Added.</b> <span class="muted">${esc(list({ ...p, documents: S.will_add.documents }))}${S.kept ? `; ${plural(S.kept, "item")} you changed will be kept` : ""}.</span></p>
-       <div class="set-inline"><button type="button" class="btn btn-sm btn-glow" data-samples-remove>Remove sample content</button></div>`
-    : `<p class="small muted">Not added.</p>
-       <div class="set-inline"><button type="button" class="btn btn-sm btn-glow" data-samples-add>Add sample content</button></div>`;
+    ? `<div class="set-inline set-inline-end"><button type="button" class="btn btn-sm btn-glow" data-samples-remove>Remove sample content</button></div>`
+    : `<div class="set-inline set-inline-end"><button type="button" class="btn btn-sm btn-glow" data-samples-add>Add sample content</button></div>`;
   el.onclick = (e) => {
     if (e.target.closest("[data-samples-add]")) addSamples();
     else if (e.target.closest("[data-samples-remove]")) removeSamples();

@@ -622,7 +622,11 @@ a.pr-menuitem { text-decoration: none; }
 .set-control .pl-input { width: 100%; }
 .set-control .set-switch { justify-self: end; }
 .set-inline { display: flex; align-items: center; gap: var(--spacing-md); flex-wrap: wrap; }
-.set-inline-end { justify-content: flex-end; }   /* the two MCP switches end on the same line, whatever their status text says */
+.set-inline-end { justify-content: flex-end; flex-wrap: nowrap; }   /* Account buttons, the MCP switches and New token all end on the row's right edge */
+.set-inline-end > .small { min-width: 0; text-align: right; }   /* a long status sits to the left of its switch and never pushes the switch */
+.set-inline-end > .set-switch { flex: none; }
+.set-control:has(.set-inline-end) { max-width: 560px; }
+.set-end { text-align: right; }   /* the two MCP switches end on the same line, whatever their status text says */
 .set-note { margin: 0; }
 .set-rules { max-height: none; white-space: pre-wrap; margin: 0; }
 .set-tag { margin-left: var(--spacing-sm); font: 400 var(--fs-micro) var(--font-code); letter-spacing: 0.06em; text-transform: uppercase; color: var(--text-muted); border: 1px solid var(--hairline-strong); border-radius: var(--radius-full); padding: 1px var(--spacing-sm); }
@@ -636,7 +640,7 @@ a.pr-menuitem { text-decoration: none; }
 .set-ok { color: var(--ok); }
 .set-bad { color: var(--crit); }
 /* Connections: the list of other runtimes. Compact buttons: 26px tall, 12px text. */
-#set-rt-ctl { display: grid; gap: var(--spacing-md); justify-items: start; }
+#set-rt-ctl { display: grid; gap: var(--spacing-md); justify-items: stretch; }
 .set-rtlist { flex: 1 0 100%; }
 .set-rtlist:empty { display: none; }
 .set-conns { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--spacing-md); width: 100%; }
@@ -1426,8 +1430,9 @@ a.pr-menuitem { text-decoration: none; }
 }
 
 /* Settings > MCP: the setup text per client */
-.mcp-snipbar { display: flex; justify-content: flex-end; margin-top: var(--spacing-sm); }
-.mcp-snip { margin: var(--spacing-xs) 0 0; padding: var(--spacing-md) var(--spacing-lg); background: var(--canvas-soft); border: 1px solid var(--hairline-strong); border-radius: var(--radius-sm); overflow-x: auto; max-width: 100%; }
+.mcp-snipwrap { position: relative; margin-top: var(--spacing-sm); }   /* Copy sits inside the box at its right, like the Address box */
+.mcp-snipwrap > .btn { position: absolute; top: 0; bottom: 0; margin: auto 0; height: fit-content; right: var(--spacing-md); z-index: 1; background: var(--canvas-soft); }
+.mcp-snip { margin: 0; padding: var(--spacing-md) 96px var(--spacing-md) var(--spacing-lg); background: var(--canvas-soft); border: 1px solid var(--hairline-strong); border-radius: var(--radius-sm); overflow-x: auto; max-width: 100%; }
 .mcp-snip code { font: 400 var(--fs-label) var(--font-code); color: var(--text-primary); white-space: pre; user-select: all; background: none; padding: 0; border: 0; }
 .mcp-snip:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 2px; }
 #set-mcp-connect { min-width: 0; max-width: 100%; }
