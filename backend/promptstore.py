@@ -285,44 +285,93 @@ def update_meta(pid: str, patch: dict, root: Path | None = None) -> dict | None:
     return _clean_meta(meta, studio)
 
 
-def import_transcripts(projects_dir: Path, root: Path | None = None) -> dict:
-    """One-off backfill: save human prompts found in Claude Code transcripts that are not saved yet.
+HOOK_WINDOW = 120   # seconds between the hook saving a prompt and its transcript line
 
-    A prompt counts as already saved when the same session has the same text within two minutes
-    (the hook and the transcript timestamp the same prompt a moment apart).
+
+def _saved_prompts(root: Path | None) -> dict:
+    """(session, text) -> [(ts, saved by the hook)] for every prompt saved or still in the trash."""
+    root = root or PROMPTS_DIR
+    found = load_all(root) + [o for p in (root / ".trash").glob("*/*.json")
+                              if not p.name.endswith((".meta.json", ".versions.json", ".chat.json"))
+                              and (o := _read_json(p)) and "prompt" in o]
+    out: dict[tuple[str, str], list[tuple[float, bool]]] = {}
+    for o in found:
+        out.setdefault((o.get("session_id", ""), o["prompt"]), []).append((o.get("ts") or 0, o.get("source") == "hook"))
+    return out
+
+
+def import_transcripts(projects_dir: Path, root: Path | None = None, state: dict | None = None,
+                       tail: bool = False, settle: float = 0) -> dict:
+    """Save human prompts found in Claude Code transcripts that are not saved yet.
+
+    A prompt counts as already saved when it is saved or in the trash for the same session with the same text: within two
+    minutes if the hook saved it, else at the same moment (an earlier import used the transcript's own time).
+    `state` is the ledger of promptsync: a prompt listed in `seen` is never saved again, even after it is deleted for good.
+    `tail` (live sync) reads each file from where it stopped last time and leaves an unsaved prompt younger than `settle`
+    seconds for the next pass, so a slower hook can save it first.
     """
     from .ingest import _is_human_prompt, _ts   # lazy: ingest needs a newer Python than the hook may have
-    known: dict[tuple[str, str], list[float]] = {}
-    for o in load_all(root):
-        known.setdefault((o.get("session_id", ""), o["prompt"]), []).append(o.get("ts") or 0)
+    st = state if state is not None else {"seen": set(), "files": {}}
+    known = None   # read only when there is a prompt the ledger has not seen
     imported = skipped = 0
-    batch: set[tuple[str, str, float]] = set()   # same line twice in one run (copied history); real repeats differ in time
     files = sorted(projects_dir.glob("*/*.jsonl"))   # no files at all means the history folder is missing or empty: the page says so
     for path in files:
+        key = str(path)
         try:
-            lines = path.read_text(errors="replace").splitlines()
+            size = path.stat().st_size
+            off = st["files"].get(key, 0) if tail else 0
+            if off > size:   # the file was rewritten
+                off = 0
+            if off == size:
+                continue
+            with open(path, "rb") as f:
+                f.seek(off)
+                while True:
+                    line = f.readline()
+                    if not line or (tail and not line.endswith(b"\n")):   # the end, or a partial write: next pass
+                        break
+                    here, off = off, off + len(line)
+                    try:
+                        o = json.loads(line.decode(errors="replace"))
+                    except ValueError:
+                        continue
+                    if o.get("type") != "user" or o.get("isCompactSummary") or o.get("isVisibleInTranscriptOnly") or not _is_human_prompt(o):
+                        continue
+                    c = o["message"]["content"]
+                    text = c if isinstance(c, str) else "\n\n".join(
+                        b["text"] for b in c if isinstance(b, dict) and b.get("type") == "text")
+                    ts, sid = _ts(o.get("timestamp")), o.get("sessionId") or path.stem
+                    if not text.strip() or ts is None or text.startswith("[Request interrupted"):
+                        continue
+                    k = f"{sid}:{ts}:{_digest(sid, text)}"
+                    if k in st["seen"]:
+                        skipped += 1
+                        continue
+                    if known is None:
+                        known = _saved_prompts(root)
+                    if any(abs(ts - t) < (HOOK_WINDOW if hook else 1) for t, hook in known.get((sid, text), [])):
+                        skipped += 1
+                    elif settle and time.time() - ts < settle:
+                        off = here
+                        break
+                    else:
+                        write_prompt(text, ts, sid, o.get("cwd") or "", source="sync" if tail else "import", root=root)
+                        imported += 1
+                    st["seen"].add(k)
         except OSError:
             continue
-        for line in lines:
-            try:
-                o = json.loads(line)
-            except ValueError:
-                continue
-            if o.get("type") != "user" or not _is_human_prompt(o):
-                continue
-            c = o["message"]["content"]
-            text = c if isinstance(c, str) else "\n\n".join(
-                b["text"] for b in c if isinstance(b, dict) and b.get("type") == "text")
-            ts, sid = _ts(o.get("timestamp")), o.get("sessionId") or path.stem
-            if not text.strip() or ts is None:
-                continue
-            if (sid, text, ts) in batch or any(abs(ts - t) < 120 for t in known.get((sid, text), [])):
-                skipped += 1
-                continue
-            write_prompt(text, ts, sid, o.get("cwd") or "", source="import", root=root)
-            batch.add((sid, text, ts))
-            imported += 1
+        if tail:
+            st["files"][key] = off
     return {"imported": imported, "skipped": skipped, "files": len(files)}
+
+
+def signature(root: Path | None = None) -> tuple:
+    """Changes whenever a prompt file is added, removed or rewritten: the month folders' modification times (cheap)."""
+    root = root or PROMPTS_DIR
+    try:
+        return tuple(sorted((p.name, p.stat().st_mtime_ns) for p in root.iterdir() if re.fullmatch(r"\d{4}-\d{2}", p.name)))
+    except OSError:
+        return ()
 
 
 def summarize(items: list[dict]) -> dict:

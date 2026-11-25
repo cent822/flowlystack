@@ -1,10 +1,10 @@
-"""Live prompt sync from other agents into the Prompt Library (Codex rollouts, Open WebUI chats).
+"""Live prompt sync into the Prompt Library (Claude Code transcripts, Codex rollouts, Open WebUI chats).
 
 Each agent has a read-only importer module with `pull(state, root) -> int` that saves new prompts through
 `promptstore.write_prompt(..., extra={"agent": ...})`. Two controls per agent on the Capture setup card: Import (one
 shot, always available, `run_once`) and the Live sync switch (the background task polls while it is on). A ledger under `<prompts dir>/.sources/<agent>.json` records
 what was imported (and where each file was read to), so a prompt you trash or delete is never imported again.
-The Claude capture hook and Claude import are not touched by any of this.
+Claude's Import button goes through the same ledger (`import_claude`). The Claude capture hook is not touched by any of this.
 """
 import importlib
 import json
@@ -16,10 +16,11 @@ from ..config import PROMPTS_DIR
 
 # `source` is the id of the Dashboard source whose folder holds the data
 AGENTS = {
+    "claude": {"label": "Claude Code", "source": "claude", "interval": 3},
     "codex": {"label": "Codex", "source": "codex", "interval": 3},
     "ollama": {"label": "Ollama (Open WebUI)", "source": "ollama", "interval": 10},
 }
-MODULES = {"codex": "codex", "ollama": "openwebui"}
+MODULES = {"claude": "claude", "codex": "codex", "ollama": "openwebui"}
 errors: dict[str, str | None] = {}
 _locks = {a: threading.Lock() for a in AGENTS}
 
@@ -57,6 +58,8 @@ def _save(agent, st):
 
 def available(agent) -> bool:
     """The agent is offered on this machine (enabled in the sources setting and its data folder exists)."""
+    if agent == "claude":   # built in: always offered, even before the first transcript exists
+        return True
     sid = AGENTS[agent]["source"]
     return sid in sources.enabled() and sources.detected(sid)
 
@@ -70,9 +73,11 @@ def run(agent) -> int:
     try:
         with _locks[agent]:
             st = _load(agent)
+            before = (len(st["seen"]), dict(st["files"]))
             n = importlib.import_module(f"{__name__}.{MODULES[agent]}").pull(st, PROMPTS_DIR)
             st["imported"] += n
-            _save(agent, st)
+            if n or before != (len(st["seen"]), st["files"]):   # nothing new: leave the ledger file alone
+                _save(agent, st)
         errors[agent] = None
         return n
     except Exception as e:
@@ -94,6 +99,18 @@ def run_once(agent) -> dict:
         _save(agent, st)
     errors[agent] = None
     return {"imported": n, "already": before}
+
+
+def import_claude() -> dict:
+    """The Library's "Import past prompts from transcripts" button: {"imported", "skipped", "files"}."""
+    from . import claude
+    with _locks["claude"]:
+        st = _load("claude")
+        r = claude.import_all(st, PROMPTS_DIR)
+        st["imported"] += r["imported"]
+        _save("claude", st)
+    errors["claude"] = None
+    return r
 
 
 def set_enabled(agent, on: bool) -> dict:

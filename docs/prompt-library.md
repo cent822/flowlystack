@@ -12,7 +12,7 @@ The Library holds prompts only from your AI tools, never made-up ones. There are
 
 | From | How |
 |---|---|
-| **Claude Code** (terminal and the desktop app's Code tab) | A small hook saves each prompt the moment you send it. You switch it on once. |
+| **Claude Code** (terminal and the desktop app's Code tab) | A **Live sync** switch (no setup), or a small hook that saves each prompt the moment you send it. |
 | **Codex** | The same kind of hook, plus an **Import** button and a **Live sync** switch. |
 | **Open WebUI** (your Ollama chats) | The **Import** button and the **Live sync** switch. |
 
@@ -42,7 +42,7 @@ Click a prompt to open it. On the page you can:
 
 When you delete a prompt, it goes to the **Trash** page in the sidebar. A message with **Undo** appears right away. In the Trash you can restore a prompt or delete it for good. The Trash empties itself after 30 days; you can change that, or turn it off, in the settings file (`trash.days`, 0 turns it off).
 
-A prompt you trash or delete is **not imported again** from Codex or Open WebUI, so cleaning up stays clean.
+A prompt you trash or delete is **not imported again** from Claude Code, Codex or Open WebUI, so cleaning up stays clean.
 
 ## Where the files are
 

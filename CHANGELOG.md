@@ -2,6 +2,20 @@
 
 What changed in each release, newest first. The app shows this page under **What's new**.
 
+## [0.1.9] - 2026-11-25
+Easier prompt capture. Update with the steps in [Updating and backup](docs/updating-and-backup.md).
+
+### New
+- **Live sync for Claude Code.** In **Prompt Library > Capture setup**, switch it on and new Claude Code prompts are saved from your history within about 15 seconds, with no hook to set up. It is off until you switch it on, and you can use it together with the hook.
+- **The Library updates by itself.** A new prompt appears in the open list without reloading the page.
+
+### Fixed
+- **Deleted prompts stay deleted.** **Import past prompts from transcripts** no longer brings back a Claude Code prompt you moved to the trash. It also skips conversation summaries and "Request interrupted" notes.
+- **Starting from source works offline.** `run.sh` starts with the packages already installed when it cannot reach the package server.
+
+### Improved
+- Updated libraries: FastAPI 0.163.1, PyArrow 26.0.1 and NumPy 2.5.5.
+
 ## [0.1.8] - 2026-11-19
 A small improvement release. Update with the steps in [Updating and backup](docs/updating-and-backup.md).
 

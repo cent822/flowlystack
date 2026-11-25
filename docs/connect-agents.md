@@ -70,7 +70,12 @@ Until you set it, the Ollama view simply isn't offered; once you set it and rest
 
 ## B. Prompt capture: save every prompt you send
 
-The **Prompt Library** keeps a copy of every prompt you send, as a plain file, with search, tags, notes and versions. Claude Code does this through a small **hook**: a line in its settings file that says "after the user sends a prompt, also run this command". The command saves the prompt and stays silent.
+The **Prompt Library** keeps a copy of every prompt you send, as a plain file, with search, tags, notes and versions. For Claude Code there are two ways, and you can use both:
+
+- **Live sync** (no setup): in **Prompt Library > Capture setup**, switch on **Live sync** next to Claude Code. FlowlyStack reads your Claude Code history and saves new prompts within about 15 seconds. It also catches up on prompts sent while the app was stopped, as long as Claude Code still has them. It is off until you switch it on.
+- A small **hook**: a line in Claude Code's settings file that says "after the user sends a prompt, also run this command". It saves each prompt the moment you send it and stays silent.
+
+An open Library list updates by itself when a new prompt arrives.
 
 ### Claude Code: one command
 
@@ -117,7 +122,7 @@ When Open WebUI is available (see above), the same **Other agents** row has **Im
 
 ## Good to know
 
-- **In Docker, the hook runs inside the app's container.** If the app is stopped when you send a prompt, that prompt is not captured. Start the app again and use **Import** for Claude Code or Codex to catch up.
+- **In Docker, the hook runs inside the app's container.** If the app is stopped when you send a prompt, that prompt is not captured. Start the app again: Live sync catches up by itself, and **Import** does the same by hand.
 - **Windows:** the same hook line is used. Claude Code runs hooks in Git Bash on Windows, so this should work, but it has had little testing. The installer script for Windows (`install.ps1`) is marked experimental for the same reason.
 - **The Claude desktop app's Code tab** shares its setup with the terminal version of Claude Code, so the hook and the Dashboard should work for both. If you see a difference on your system, please tell us.
 - **Where do captured prompts live?** In the `prompts` folder inside your `flowlystack` folder, as plain files you can open, back up and move.

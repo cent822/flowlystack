@@ -212,7 +212,15 @@
     <details class="card pl-setup" id="pl-setup">
       <summary><h2>Capture setup</h2><span class="muted small" id="pl-count"></span></summary>
       <div class="pl-setup-body">
-        <p class="small">Prompts are saved to <code id="pl-dir"></code>. To capture new prompts live, add this hook to <code id="pl-file"></code>:</p>
+        <p class="small">Prompts are saved to <code id="pl-dir"></code>. To capture new Claude Code prompts with no setup, turn on Live sync: it reads your transcripts.</p>
+        <div class="pl-syncrow">
+          <span class="pl-synclabel">Claude Code</span>
+          <span class="muted small pl-syncstate" id="pl-claude-state"></span>
+          <button class="btn btn-sm btn-glow btn-glow-md pl-ghost" type="button" tabindex="-1" aria-hidden="true">Import</button><span class="pl-impmsg"></span><!-- invisible: keeps the switch in line with the other agents' switches; Import is the button below -->
+          <button class="pl-switch" id="pl-claude-live" type="button" role="switch" aria-checked="false"><i></i><span>Live sync</span></button>
+          <span class="muted small" id="pl-claude-msg" role="status"></span>
+        </div>
+        <p class="small">Or, to capture each prompt the moment you send it, add this hook to <code id="pl-file"></code> (you can use both):</p>
         <pre class="pl-code" id="pl-snippet"></pre>
         <div class="pl-row">
           <button class="btn btn-sm btn-glow btn-glow-md" id="pl-copy" type="button"><svg class="ic ic-copy" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V6a2 2 0 0 1 2-2h9"/></svg><svg class="ic ic-ok" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg><span>Copy hook JSON</span></button>

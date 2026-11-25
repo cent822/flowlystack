@@ -7,7 +7,7 @@ import "./samples.js";
 import "./updatenotice.js";
 import "./whatsnewdialog.js";
 import { isDark, setMode } from "./theme.js";
-import { showPrompts } from "./prompts.js";
+import { showPrompts, promptsChanged } from "./prompts.js";
 import { showStudio } from "./studio.js";
 import { showTrash, refreshTrashCount } from "./trash.js";
 import { showLinkshell } from "./linkshell/home.js";
@@ -362,4 +362,5 @@ if (!location.search.includes("static")) {   // ?static skips the live stream (u
   const es = new EventSource("/api/stream");
   es.addEventListener("update", () => loadAll());
   es.addEventListener("tick", () => loadLive());
+  es.addEventListener("prompts", () => promptsChanged());
 }

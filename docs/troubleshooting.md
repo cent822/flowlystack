@@ -80,6 +80,7 @@ Set `TZ` in `.env` to your time zone name, such as `Europe/London` or `Asia/Bang
 ## Prompts and capture
 
 **My prompts aren't being saved in the Library.**
+- The simplest fix for Claude Code: switch on **Live sync** in **Prompt Library > Capture setup**. It needs no hook.
 - In Docker, the hook runs inside the app's container. **FlowlyStack must be running** when you send the prompt. Check `docker ps`.
 - Start a **new** Claude Code session after setting up capture. An old session doesn't know about the new hook.
 - Check the hook is there: **Prompt Library > Capture setup**, or the `hooks` part of `~/.claude/settings.json`.

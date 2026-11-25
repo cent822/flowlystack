@@ -10,7 +10,7 @@ from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 
 from . import about_api, assistant_api, auth_api, collections as co, collections_api, gallery_api, kgraph_api, linkshell, linkshell_api, mcp_api, profile_api, promptstore, promptsync, queries, samples_api, settings_api, sources, studio_api, update_api
-from .config import CONFIG, FRONTEND_DIR, PROJECTS_DIR, PROMPTS_DIR, ROOT
+from .config import CONFIG, FRONTEND_DIR, PROMPTS_DIR, ROOT
 from .db import connect
 from .ingest import scan
 from .promptstore import STUDIO_DIR
@@ -33,7 +33,7 @@ app.include_router(assistant_api.router)   # Studio Assistant: /api/assistant an
 app.include_router(mcp_api.router)   # MCP: POST /mcp (token, not session; off until Settings > MCP is switched on)
 con = connect()
 lock = threading.Lock()          # one sqlite connection shared by the poller and request threads
-version = {"n": 0}               # bumps whenever new transcript lines land; SSE clients watch it
+version = {"n": 0, "prompts": None}   # n bumps whenever new transcript lines land, "prompts" changes with the Library's folders; SSE clients watch both
 
 
 def q(fn, *a):
@@ -67,6 +67,7 @@ async def start():
             with lock:
                 if scan(con):
                     version["n"] += 1
+            version["prompts"] = await asyncio.to_thread(promptstore.signature)
             n += 1
             if n % 5 == 0:   # the hook writes prompt files on its own; pick them up for the search index
                 await asyncio.to_thread(sync_search)
@@ -258,7 +259,7 @@ def prompts_sync_import(agent: str):
 
 @app.post("/api/prompts/import")
 def prompts_import():
-    r = promptstore.import_transcripts(PROJECTS_DIR)
+    r = promptsync.import_claude()
     sync_search()
     return r
 
@@ -415,13 +416,16 @@ def trash_empty(): return {"deleted": promptstore.empty_trash() + promptstore.em
 
 @app.get("/api/stream")
 async def stream():
-    """Server-Sent Events: emits `update` when data changes, `tick` every few seconds for live status."""
+    """Server-Sent Events: `update` when data changes, `prompts` when Library files change, `tick` every few seconds for live status."""
     async def gen():
-        seen, beat = version["n"], 0
+        seen, saved, beat = version["n"], version["prompts"], 0
         yield "retry: 3000\n\n"
         while True:
             await asyncio.sleep(1)
             beat += 1
+            if version["prompts"] != saved:
+                saved = version["prompts"]
+                yield "event: prompts\ndata: {}\n\n"
             if version["n"] != seen:
                 seen = version["n"]
                 yield "event: update\ndata: {}\n\n"

@@ -40,6 +40,21 @@ export function showPrompts() {
   loadList().catch(() => {}); loadSetup().catch(() => {}); loadSync().catch(() => {});
 }
 
+// New or removed prompt files (the hook, live sync, another tab): reload the open list in place. The editor is never touched.
+let changedT;
+export function promptsChanged() {
+  clearTimeout(changedT);
+  if (!view.ready || $("#page-prompts").hidden || $("#pl-list-view").hidden) return;   // opening the page loads it anyway
+  const at = document.activeElement;
+  if (document.querySelector("dialog[open]") || at?.matches("#pl-list-view select")) {   // do not rebuild under an open menu
+    changedT = setTimeout(promptsChanged, 2000); return;
+  }
+  const row = at?.closest("#pl-list .pr-row") && at.getAttribute("href");
+  loadList().then(() => { if (row) $(`#pl-list a[href="${row}"]`)?.focus({ preventScroll: true }); }).catch(() => {});
+  loadSetup().catch(() => {});
+  if (!$("#pl-sync").contains(at)) loadSync().catch(() => {});
+}
+
 // ======================================================================= list
 // auto: while searching, results are ordered by relevance until the user picks a sort column.
 const L = { q: "", filter: "all", project: "", agent: "", tags: [], sort: "updated", dir: "desc", auto: true, page: 1, tagFind: "", seq: 0, data: null };
@@ -118,7 +133,7 @@ function renderRows() {
       </a>
       <button type="button" class="icon-btn pr-del" data-del="${esc(o.id)}" aria-label="Move to trash" title="Move to trash">${TRASH}</button>
     </li>`).join("")
-    : `<li class="muted pr-empty">${d.total ? "Nothing matches these filters." : "No prompts saved yet. Open Capture setup to install the hook or import past prompts."}</li>`;
+    : `<li class="muted pr-empty">${d.total ? "Nothing matches these filters." : "No prompts saved yet. Open Capture setup to turn on Live sync, install the hook or import past prompts."}</li>`;
 }
 
 function renderPager() {
@@ -171,7 +186,11 @@ const liveMsg = (id, a) => SYNC.live[id] || (a.enabled ? `Live sync on for ${a.l
 async function loadSync() {
   const [s, setup] = await Promise.all([api("prompts/sync"), api("prompts/setup")]);
   SYNC.codexSnippet = setup.codex ? JSON.stringify(setup.codex.snippet, null, 2) : "";
-  const rows = Object.entries(s).filter(([, a]) => a.available);
+  const claude = $("#pl-claude-live"), c = s.claude;
+  claude.setAttribute("aria-checked", c.enabled);
+  $("#pl-claude-state").textContent = `${c.imported} imported${c.error ? ` · ${c.error}` : ""}`;
+  $("#pl-claude-msg").textContent = SYNC.live.claude || "";   // only a failure to switch is worth words
+  const rows = Object.entries(s).filter(([id, a]) => a.available && id !== "claude");
   const box = $("#pl-sync");
   box.hidden = !rows.length;
   box.innerHTML = rows.length ? `<span class="pl-label">Other agents</span>` + rows.map(([id, a]) => `
@@ -189,6 +208,16 @@ async function loadSync() {
 
 function wireList() {
   let t;
+  $("#pl-claude-live").addEventListener("click", async (e) => {
+    const btn = e.currentTarget; if (btn.disabled) return;
+    btn.disabled = true;
+    try {
+      await send("PUT", "prompts/sync/claude", { enabled: btn.getAttribute("aria-checked") !== "true" });
+      delete SYNC.live.claude;
+    } catch (err) { SYNC.live.claude = "Could not change live sync"; }
+    await loadSync().catch(() => {});
+    btn.disabled = false;
+  });
   $("#pl-sync").addEventListener("click", async (e) => {
     const copyBtn = e.target.closest("[data-copy]");
     if (copyBtn) return copy(copyBtn, SYNC.codexSnippet);

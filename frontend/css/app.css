@@ -536,6 +536,7 @@ td .sub { color: var(--text-muted); font: 400 var(--fs-meta) var(--font-code); }
 .pl-synclabel { min-width: 180px; font-size: var(--fs-meta); letter-spacing: var(--track-meta); }
 .pl-syncstate { min-width: 140px; }
 .pl-impmsg { min-width: 220px; }
+.pl-ghost { visibility: hidden; }
 .pl-hook { display: grid; gap: var(--spacing-sm); padding-left: var(--spacing-lg); border-left: 1px solid var(--edge-soft); margin: var(--spacing-xs) 0 var(--spacing-md); }
 .pl-switch { display: inline-flex; align-items: center; gap: var(--spacing-md); min-height: 28px; padding: 0; background: transparent; color: var(--text-primary); border: 0; border-radius: var(--radius-full); font: 400 var(--fs-label) var(--font-display); letter-spacing: var(--track-label); cursor: pointer; }   /* no box: the switch and its words, like the Settings switches */
 .pl-switch:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 4px; }   /* the keyboard only */

@@ -8,7 +8,14 @@ OLD=$(lsof -nP -iTCP:"${PORT:-8372}" -sTCP:LISTEN -t 2>/dev/null | head -1)
 # pyproject.toml is the one dependency list. Installing from it on every start costs a fraction of a second when
 # nothing changed, and keeps an existing .venv in step after a pull.
 [ -d .venv ] || uv venv --python 3.12 .venv || exit 1
-uv pip install --quiet --python .venv/bin/python -r pyproject.toml || { echo "Could not install the dependencies from pyproject.toml (see the message above)." >&2; exit 1; }
+# Offline (or PyPI unreachable): if the packages are already installed, start with them instead of refusing.
+if ! uv pip install --quiet --python .venv/bin/python -r pyproject.toml; then
+  if .venv/bin/python -c "import uvicorn, fastapi" 2>/dev/null; then
+    echo "Could not check the dependencies (offline?); starting with the ones already installed." >&2
+  else
+    echo "Could not install the dependencies from pyproject.toml (see the message above)." >&2; exit 1
+  fi
+fi
 # Auto-restarts when files under backend/ change (RELOAD=0 ./run.sh to turn off).
 # --timeout-graceful-shutdown: the live-update stream (/api/stream) never ends on its own, so without a limit
 # every reload waited forever for any open browser tab and the server stayed down until it was restarted by hand.
